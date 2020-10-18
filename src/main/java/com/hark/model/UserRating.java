@@ -37,7 +37,8 @@ public class UserRating {
 	
 	private int stars;
 	
-	@OneToOne(fetch=FetchType.LAZY,mappedBy = "userRating", cascade = CascadeType.ALL)
+	@OneToOne(fetch=FetchType.LAZY,cascade = CascadeType.ALL)
+	@JoinColumn(name = "discussion_id",nullable=false)
 	private Discussion chatRoom;
 	
 	@ManyToOne

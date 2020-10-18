@@ -7,7 +7,7 @@ spring:
     allow-bean-definition-overriding: true
   profiles: dev
   datasource:
-    url: jdbc:mysql://0.0.0.0:3306/ebook_chat
+    url: jdbc:mysql://192.168.32.129:3306/ebook_chat
     username: root
     password: root
     testWhileIdle: true
@@ -28,7 +28,7 @@ spring:
   messages:
     cache-seconds: 0
   redis:
-    host: 0.0.0.0
+    host: 192.168.32.129
     port: 6379
   data:
     redis:
@@ -36,6 +36,10 @@ spring:
         enabled: true
     cassandra:
       local-datacenter: datacenter1
+      contact-points: 192.168.32.129
+      port: 9042
+      keyspace-name: ebook_chat
+      entity-base-package : "com.hark.model"
 
 flyway.enabled: true      
 security.headers.cache: false 
@@ -45,15 +49,10 @@ server.session.timeout: 600
 hark:
  app:
   jwtSecret: harkSecretKey
-  jwtExpirationMs: 86400000
- db:
-   cassandra:
-     host: 0.0.0.0
-     port: 9042
-     keyspace: ebook_chat
+  jwtExpirationMs: 86400000   
  chat:
    relay:
-     host: 0.0.0.0
+     host: 192.168.32.129
      port: 61613
 
 
@@ -88,14 +87,14 @@ spring:
       repositories:
         enabled: true
     cassandra:
-      local-datacenter: datacenter1
+      datacenter: datacenter1      contact-points:      - "192.168.32.129"
 
 flyway.enabled: true
 
 hark:
   db:
     cassandra:
-      host: 0.0.0.0
+      host: 192.168.32.129
       port: 9042
       keyspace: ebook_chat
   chat:

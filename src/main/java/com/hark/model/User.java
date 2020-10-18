@@ -76,6 +76,8 @@ public class User {
 	private String country;
 
 	private boolean isActive = true;
+	
+	private boolean isSearching = false;
 
 	public User(String username, String email, String password,Long phone) {
 		this.username = username;

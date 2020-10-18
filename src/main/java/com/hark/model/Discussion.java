@@ -41,7 +41,7 @@ public class Discussion {
 	@Column(name="id")
 	private Long id;
 
-	@OneToOne(mappedBy ="user",cascade = CascadeType.ALL,fetch=FetchType.EAGER)
+	@OneToOne(mappedBy ="chatRoom",cascade = CascadeType.ALL,fetch=FetchType.EAGER)
 	private UserRating userRating;
 	
 	@OneToMany(fetch=FetchType.LAZY,cascade = CascadeType.ALL)
