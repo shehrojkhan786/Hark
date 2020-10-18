@@ -1,0 +1,100 @@
+spring.profiles.active: dev
+
+---
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  profiles: dev
+  datasource:
+    url: jdbc:mysql://192.168.32.129:3306/ebook_chat
+    username: root
+    password: root
+    testWhileIdle: true
+    validationQuery: SELECT 1
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+      naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5Dialect
+        jdbc:
+          lob:
+            non_contextual_creation: true
+  session:
+    store-type: redis
+  messages:
+    cache-seconds: 0
+  redis:
+    host: 192.168.32.129
+    port: 6379
+  data:
+    redis:
+      repositories:
+        enabled: true
+
+flyway.enabled: true      
+security.headers.cache: false 
+server.session.timeout: 600
+
+# App Properties
+hark:
+ app:
+  jwtSecret: harkSecretKey
+  jwtExpirationMs: 86400000
+ db:
+   cassandra:
+     host: 192.168.32.129
+     port: 9402
+     keyspace: ebook_chat
+ chat:
+   relay:
+     host: 192.168.32.129
+     port: 61613
+
+
+---
+
+spring:
+  profiles: test
+  datasource:
+    url: jdbc:postgresql://192.168.32.129:5432/hark
+    username: hark
+    password: hark
+    testWhileIdle: true
+    validationQuery: SELECT 1
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+      naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          lob:
+            non_contextual_creation: true
+  session:
+    store-type: redis
+  redis:
+    host: 192.168.32.129
+    port: 6379
+  data:
+    redis:
+      repositories:
+        enabled: true
+
+flyway.enabled: true
+
+hark:
+  db:
+    cassandra:
+      host: 192.168.32.129
+      port: 9402
+      keyspace: ebook_chat
+  chat:
+    relay:
+      host: 192.168.32.129
+      port: 61613
