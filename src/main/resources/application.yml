@@ -7,7 +7,7 @@ spring:
     allow-bean-definition-overriding: true
   profiles: dev
   datasource:
-    url: jdbc:mysql://192.168.32.129:3306/ebook_chat
+    url: jdbc:mysql://0.0.0.0:3306/ebook_chat
     username: root
     password: root
     testWhileIdle: true
@@ -15,7 +15,7 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
       naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
     properties:
       hibernate:
@@ -28,12 +28,14 @@ spring:
   messages:
     cache-seconds: 0
   redis:
-    host: 192.168.32.129
+    host: 0.0.0.0
     port: 6379
   data:
     redis:
       repositories:
         enabled: true
+    cassandra:
+      local-datacenter: datacenter1
 
 flyway.enabled: true      
 security.headers.cache: false 
@@ -46,12 +48,12 @@ hark:
   jwtExpirationMs: 86400000
  db:
    cassandra:
-     host: 192.168.32.129
-     port: 9402
+     host: 0.0.0.0
+     port: 9042
      keyspace: ebook_chat
  chat:
    relay:
-     host: 192.168.32.129
+     host: 0.0.0.0
      port: 61613
 
 
@@ -68,7 +70,7 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: validate
+      ddl-auto: create-drop
       naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
     properties:
       hibernate:
@@ -85,14 +87,16 @@ spring:
     redis:
       repositories:
         enabled: true
+    cassandra:
+      local-datacenter: datacenter1
 
 flyway.enabled: true
 
 hark:
   db:
     cassandra:
-      host: 192.168.32.129
-      port: 9402
+      host: 0.0.0.0
+      port: 9042
       keyspace: ebook_chat
   chat:
     relay:

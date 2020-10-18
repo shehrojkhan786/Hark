@@ -27,9 +27,15 @@ public class CassandraConfig extends AbstractCassandraConfiguration {
 	private Integer cassandraPort;
 	
 	@Override
-    protected String getKeyspaceName() {
-        return this.cassandraKeyspace;
-    }
+	protected String getKeyspaceName() {
+	return this.cassandraKeyspace;
+	}
+
+	@Override
+	protected String getLocalDataCenter() {
+	    return "datacenter1";
+	}
+
     
     @Bean
     @Primary
@@ -37,6 +43,7 @@ public class CassandraConfig extends AbstractCassandraConfiguration {
     	CqlSessionFactoryBean cluster = new CqlSessionFactoryBean();  	
         cluster.setContactPoints(this.cassandraHost);
         cluster.setPort(this.cassandraPort);
+        cluster.setLocalDatacenter("datacenter1");
         cluster.setKeyspaceCreations(
         		Arrays.asList(
         				CreateKeyspaceSpecification.createKeyspace(getKeyspaceName())
