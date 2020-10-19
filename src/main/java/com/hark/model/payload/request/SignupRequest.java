@@ -2,6 +2,7 @@ package com.hark.model.payload.request;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -31,5 +32,14 @@ public class SignupRequest {
     
     @NotNull
     private Long phone;
+    
+	@NotEmpty
+	private String politicalParty;
+
+	@NotEmpty
+	private String country;
+	
+	@NotEmpty
+	private String name;
   
 }

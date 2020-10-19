@@ -91,27 +91,28 @@ public class AuthenticationController {
 
 		// Create new user's account
 		User user = new User(signUpRequest.getUsername(), signUpRequest.getEmail(),
-				encoder.encode(signUpRequest.getPassword()), signUpRequest.getPhone());
+				encoder.encode(signUpRequest.getPassword()), signUpRequest.getPhone(),
+				signUpRequest.getPoliticalParty(), signUpRequest.getCountry(),signUpRequest.getName());
 
 		String strRole = signUpRequest.getRole();
 
 		final Role userRole;
 
 		if (strRole == null || strRole.isBlank()) {
-			userRole = roleRepository.findByName(ERole.ROLE_USER)
+			userRole = roleRepository.findByName(ERole.USER)
 					.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 		} else {
 			switch (strRole) {
 			case "admin":
-				userRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+				userRole = roleRepository.findByName(ERole.ADMIN)
 						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 				break;
 			case "mod":
-				userRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
+				userRole = roleRepository.findByName(ERole.MODERATOR)
 						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 				break;
 			default:
-				userRole = roleRepository.findByName(ERole.ROLE_USER)
+				userRole = roleRepository.findByName(ERole.USER)
 						.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 			}
 		}
@@ -120,6 +121,30 @@ public class AuthenticationController {
 		userRepository.save(user);
 
 		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+	}
+	
+	@PostMapping("/checkUsername")
+	public ResponseEntity<?> checkUsername(@Valid String username) {
+		if (userRepository.existsByUsername(username)) {
+			return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
+		}
+		return ResponseEntity.ok(new MessageResponse("Username available!!!"));
+	}
+	
+	@PostMapping("/checkEmail")
+	public ResponseEntity<?> checkEmail(@Valid String email) {
+		if (userRepository.existsByEmail(email)) {
+			return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already present!"));
+		}
+		return ResponseEntity.ok(new MessageResponse("Email available!!!"));
+	}
+	
+	@PostMapping("/checkPhone")
+	public ResponseEntity<?> checkPhone(@Valid Long phone) {
+		if (userRepository.existsByPhone(phone)) {
+			return ResponseEntity.badRequest().body(new MessageResponse("Error: Phone number is already present!"));
+		}
+		return ResponseEntity.ok(new MessageResponse("Phone number available!!!"));
 	}
 
 }

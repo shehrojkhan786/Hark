@@ -16,13 +16,13 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
@@ -61,9 +61,6 @@ public class User {
 	@NotEmpty
 	private String name;
 
-	@NotEmpty
-	private String aliasName;
-
 	@Email
 	private String email;
 
@@ -80,11 +77,14 @@ public class User {
 	
 	private boolean isSearching = false;
 
-	public User(String username, String email, String password,Long phone) {
+	public User(String username, String email, String password,Long phone,String politicalParty,String country,String name) {
 		this.username = username;
 		this.email = email;
 		this.password = password;
 		this.phone = phone;
+		this.politicalParty = politicalParty;
+		this.country = country;
+		this.name = name;
 	}
 
 	@OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,mappedBy="user")
@@ -98,7 +98,8 @@ public class User {
 	    )	
 	private Set<Badge> badges = new HashSet<>(0);
 
-	@OneToOne(mappedBy ="user",cascade = CascadeType.ALL,fetch=FetchType.EAGER)	
+	@ManyToOne(cascade = CascadeType.ALL,fetch=FetchType.LAZY)
+	@JoinColumn(name = "role_id")	
 	private Role role;
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

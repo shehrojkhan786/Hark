@@ -36,16 +36,12 @@ import lombok.NoArgsConstructor;
 public class Role {
 	
 	@Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="role_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name="id")
 	private Long id;
 	
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20)
 	private ERole name;
 	
-	@OneToOne(cascade = CascadeType.ALL,fetch=FetchType.LAZY)
-	@JoinColumn(name = "user_id")
-	private User user;
-
 }
