@@ -2,6 +2,7 @@ package com.hark.model.payload.request;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
@@ -28,7 +29,7 @@ public class SignupRequest {
     @Size(min = 6, max = 40)
     private String password;
     
-    @NotBlank
+    @NotNull
     private Long phone;
   
 }

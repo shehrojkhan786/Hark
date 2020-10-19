@@ -25,7 +25,7 @@ public class SearchAndMatchService {
 	
 	public User searchUser(User participant) {
 		Random rand = new Random(); 
-		List<User> candidates = userRepository.findByIsSearchingAndPoliticalPartyIsNotEqualTo(true, participant.getPoliticalParty());
+		List<User> candidates = userRepository.findByIsSearchingAndPoliticalPartyNot(true, participant.getPoliticalParty());
 		User candidate = candidates.get(rand.nextInt(candidates.size()));
 		return candidate;
 	}

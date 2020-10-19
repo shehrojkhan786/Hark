@@ -15,7 +15,7 @@ import org.springframework.data.cassandra.core.mapping.CassandraMappingContext;
 
 import lombok.Data;
 
-@Profile({"dev","test"})
+@Profile({"dev","test","sourabh"})
 @Configuration
 @Data
 public class CassandraConfig extends AbstractCassandraConfiguration {
@@ -74,7 +74,7 @@ public class CassandraConfig extends AbstractCassandraConfiguration {
 	            + getKeyspaceName()
 	            + " WITH durable_writes = true"
 	            + " AND replication = {'class' : 'SimpleStrategy', 'replication_factor' : 1};";
-	    final String script1 = "USE ebook_chat";
+	    final String script1 = "USE "+getKeyspaceName();
 	    final String script2 = "CREATE TABLE IF NOT EXISTS messages (" + "username text," +
 	    		"chatRoomId text," + "date timestamp," + "fromUser text," + "toUser text," +
 	    		"text text," + "PRIMARY KEY ((username, chatRoomId), date)" +
