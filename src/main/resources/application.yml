@@ -1,13 +1,12 @@
 spring.profiles.active: dev
 
 ---
-
 spring:
   main:
     allow-bean-definition-overriding: true
   profiles: dev
   datasource:
-    url: jdbc:mysql://192.168.32.129:3306/ebook_chat
+    url: jdbc:mysql://192.168.32.129:3306/hark
     username: root
     password: root
     testWhileIdle: true
@@ -38,9 +37,10 @@ spring:
       local-datacenter: datacenter1
       contact-points: 192.168.32.129
       port: 9042
-      keyspace-name: ebook_chat
-      entity-base-package : "com.hark.model"
-
+      keyspace-name: hark
+      entity-base-package : "com.hark.model"  servlet:    multipart:
+      enabled: true      max-file-size: 1MB
+      max-request-size: 1MB                
 flyway.enabled: true      
 security.headers.cache: false 
 server.session.timeout: 600
@@ -96,7 +96,7 @@ hark:
     cassandra:
       host: 192.168.32.129
       port: 9042
-      keyspace: ebook_chat
+      keyspace: hark
   chat:
     relay:
       host: 192.168.32.129

@@ -19,19 +19,20 @@ import com.hark.repositories.UserRepository;
  */
 @Service
 public class SearchAndMatchService {
-	
+
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	public User searchUser(User participant) {
-		Random rand = new Random(); 
-		List<User> candidates = userRepository.findByIsSearchingAndPoliticalPartyNot(true, participant.getPoliticalParty());
+		Random rand = new Random();
+		List<User> candidates = userRepository.findByIsSearchingAndPoliticalPartyNot(true,
+				participant.getPoliticalParty());
 		User candidate = candidates.get(rand.nextInt(candidates.size()));
 		return candidate;
 	}
-	
-//	public Discussion createDiscussionRoom() {
-//		
-//	}
+
+	public Discussion createDiscussionRoom() {
+		return null;
+	}
 
 }

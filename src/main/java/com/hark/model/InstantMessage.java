@@ -8,6 +8,7 @@ import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
 import org.springframework.data.cassandra.core.mapping.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.hark.model.enums.MessageType;
 import com.hark.utils.SystemUsers;
 
 import lombok.AllArgsConstructor;
@@ -32,7 +33,8 @@ public class InstantMessage {
 	private String fromUser;
 	private String toUser;
 	private String text;
-	
+	private String messageType;
+		
 	public InstantMessage() { 
 		this.date = new Date();
 	}
@@ -46,5 +48,13 @@ public class InstantMessage {
 	
 	public boolean isNullOrEmpty(String text) {
 		return  null == text ? true : text.isBlank();
+	}
+	
+	public String setMessageType(MessageType message) {
+		return message.name();
+	}
+	
+	public MessageType getMessage(String message) {
+		return MessageType.valueOf(message);
 	}
 }

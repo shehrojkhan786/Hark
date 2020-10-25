@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
@@ -25,6 +26,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.hark.model.Discussion;
 import com.hark.model.DiscussionUser;
 import com.hark.model.InstantMessage;
+import com.hark.model.enums.MessageType;
 import com.hark.services.DiscussionService;
 import com.hark.services.InstantMessageService;
 
@@ -70,10 +72,11 @@ public class DiscussionContoller {
 
 	@MessageMapping("/send.message")
 	public void sendMessage(@Payload InstantMessage instantMessage, Principal principal,
-			SimpMessageHeaderAccessor headerAccessor) {
+			SimpMessageHeaderAccessor headerAccessor, @RequestParam("messageType") String messageType) {
 		String chatRoomId = headerAccessor.getSessionAttributes().get("chatRoomId").toString();
 		instantMessage.setFromUser(principal.getName());
 		instantMessage.setChatRoomId(chatRoomId);
+		instantMessage.setMessageType(MessageType.valueOf(messageType));
 
 		if (instantMessage.isPublic()) {
 			chatRoomService.sendPublicMessage(instantMessage);

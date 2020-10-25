@@ -3,10 +3,20 @@
  */
 package com.hark.controllers;
 
+import java.util.NoSuchElementException;
+
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.hark.model.User;
+import com.hark.model.payload.response.MessageResponse;
+import com.hark.repositories.UserRepository;
 
 
 /**
@@ -15,16 +25,31 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/user/")
 public class UserController {
 	
 	@Autowired
 	private SearchAndMatchService searchAndMatchService;
+	
+	@Autowired
+	private UserRepository userRepository;
 	
 //	@PostMapping("/search")
 //	public ResponseEntity<?> searchAndMatch(@Valid User user){
 //		
 //		
 //	}
+	
+	@GetMapping("/{username}")
+	public ResponseEntity<?> getUserDetails(@Valid String username){
+		User user = null;
+		try {
+			user = userRepository.findByUsername(username).get();
+		}catch(NoSuchElementException ex) {
+			return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is invalid"));
+		}
+		
+		return ResponseEntity.ok(user);
+	}
 	
 }

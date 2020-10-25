@@ -40,7 +40,7 @@ public class Discussion {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name="id")
 	private Long id;
-
+	
 	@OneToOne(mappedBy ="chatRoom",cascade = CascadeType.ALL,fetch=FetchType.EAGER)
 	private UserRating userRating;
 	
