@@ -10,6 +10,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,7 +39,7 @@ public class UserController {
 	@Autowired
 	private UserRepository userRepository;
 	
-	@PostMapping("/search")
+	@PostMapping("/searchUserAndCreateRoom")
 	public ResponseEntity<?> searchAndMatch(@Valid String username){
 		User user = userRepository.findByUsername(username).get();
 		user.setSearching(true);
@@ -62,6 +63,15 @@ public class UserController {
 		}
 		
 		return ResponseEntity.ok(user);
+	}
+	
+	@DeleteMapping("/removeRoom")
+	public ResponseEntity<?> removeRoom(@Valid String discussionRoomId){
+			boolean isDeleted= searchAndMatchService.deleteDiscussionRoom(discussionRoomId);
+		if(isDeleted) {
+			return ResponseEntity.ok(new MessageResponse("Room deleted!!!"));
+		}
+		return ResponseEntity.badRequest().body(new MessageResponse("Cannot delete room, try again later!!!"));
 	}
 	
 }

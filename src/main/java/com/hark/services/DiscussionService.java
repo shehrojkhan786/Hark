@@ -15,4 +15,5 @@ public interface DiscussionService {
 	void sendPublicMessage(InstantMessage instantMessage);
 	void sendPrivateMessage(InstantMessage instantMessage);
 	List<Discussion> findAll();
+	boolean deleteById(String id);
 }

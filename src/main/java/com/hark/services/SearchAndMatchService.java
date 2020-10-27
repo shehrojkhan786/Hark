@@ -4,6 +4,8 @@
 package com.hark.services;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.hark.model.Discussion;
 import com.hark.model.User;
+import com.hark.repositories.DiscussionRepository;
 import com.hark.repositories.UserRepository;
 
 /**
@@ -24,7 +27,7 @@ public class SearchAndMatchService {
 	private UserRepository userRepository;
 	
 	@Autowired
-	private DiscussionService discussionService;
+	private DiscussionRepository discussionRepository;
 
 	public User searchUser(User participant) {
 		Random rand = new Random();
@@ -38,8 +41,19 @@ public class SearchAndMatchService {
 
 	public Discussion createDiscussionRoom() {
 		Discussion discussRoom = new Discussion();
-		discussRoom = discussionService.save(discussRoom);
+		discussRoom = discussionRepository.save(discussRoom);
 		return discussRoom;
+	}
+	
+	public boolean deleteDiscussionRoom(String id) {
+		discussionRepository.deleteById(id);
+		Optional<Discussion> discussion = discussionRepository.findById(id);
+		try{
+			discussion.get();
+		}catch (NoSuchElementException e) {
+			return true;
+		}
+		return false;
 	}
 
 }

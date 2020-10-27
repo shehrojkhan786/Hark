@@ -1,6 +1,8 @@
 package com.hark.services;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -90,4 +92,17 @@ public class RedisDiscussionRoomService implements DiscussionService {
 				Destinations.Discussion.connectedUsers(String.valueOf(chatRoom.getId())),
 				chatRoom.getUsers());
 	}
+
+	@Override
+	public boolean deleteById(String id) {
+		discussionRepository.deleteById(id);
+		Optional<Discussion> discussion = discussionRepository.findById(id);
+		try{
+			discussion.get();
+		}catch (NoSuchElementException e) {
+			return true;
+		}
+		return false;
+	}
+	
 }
