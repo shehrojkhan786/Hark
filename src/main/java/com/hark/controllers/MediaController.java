@@ -91,5 +91,26 @@ public class MediaController {
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
 				.body(resource);
 	}
+	
+	@PostMapping("/upload/user")
+	public ResponseEntity<String> uploadProfileImage(@RequestParam("file") MultipartFile file,@RequestParam("userId") String userId) throws Exception {
+
+		if (file == null) {
+			throw new RuntimeException("You must select the a file for uploading");
+		}
+
+		String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+		String filePath = String.join("/", fileBasePath, "users", userId, fileName);
+		Path path = Paths.get(filePath);
+		try {
+			Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath().path(filePath).toUriString();
+
+		// Do processing with uploaded file data in Service layer
+		return new ResponseEntity<String>(fileDownloadUri, HttpStatus.OK);
+	}
 
 }

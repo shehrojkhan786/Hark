@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.hark.controllers;
+package com.hark.services;
 
 import java.util.List;
 import java.util.Random;
@@ -22,17 +22,24 @@ public class SearchAndMatchService {
 
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private DiscussionService discussionService;
 
 	public User searchUser(User participant) {
 		Random rand = new Random();
-		List<User> candidates = userRepository.findByIsSearchingAndPoliticalPartyNot(true,
-				participant.getPoliticalParty());
-		User candidate = candidates.get(rand.nextInt(candidates.size()));
+		User candidate = null;
+		List<User> candidates = userRepository.findByIsSearchingAndPoliticalPartyNot(true,participant.getPoliticalParty());
+		if(null != candidates && candidates.size() > 0) {
+			candidate = candidates.get(rand.nextInt(candidates.size()));
+		}
 		return candidate;
 	}
 
 	public Discussion createDiscussionRoom() {
-		return null;
+		Discussion discussRoom = new Discussion();
+		discussRoom = discussionService.save(discussRoom);
+		return discussRoom;
 	}
 
 }

@@ -8,10 +8,10 @@ import com.hark.model.InstantMessage;
 
 public interface DiscussionService {
 	
-	Discussion save(Discussion chatRoom);
-	Discussion findById(String chatRoomId);
-	Discussion join(DiscussionUser joiningUser, Discussion chatRoom);
-	Discussion leave(DiscussionUser leavingUser, Discussion chatRoom);
+	Discussion save(Discussion discussion);
+	Discussion findById(String discussionId);
+	Discussion join(DiscussionUser joiningUser, Discussion discussion);
+	Discussion leave(DiscussionUser leavingUser, Discussion discussion);
 	void sendPublicMessage(InstantMessage instantMessage);
 	void sendPrivateMessage(InstantMessage instantMessage);
 	List<Discussion> findAll();
