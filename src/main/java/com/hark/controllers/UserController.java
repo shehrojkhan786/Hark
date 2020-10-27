@@ -45,6 +45,8 @@ public class UserController {
 		User opponent = searchAndMatchService.searchUser(user);
 		if(null != opponent) {
 			Discussion room = searchAndMatchService.createDiscussionRoom();
+			user.setSearching(false);
+			userRepository.save(user);
 			return ResponseEntity.ok(room);
 		}
 		return ResponseEntity.badRequest().body(new MessageResponse("No opponent found, Try again later"));
