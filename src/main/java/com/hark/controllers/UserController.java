@@ -20,7 +20,7 @@ import com.hark.model.Discussion;
 import com.hark.model.User;
 import com.hark.model.payload.response.MessageResponse;
 import com.hark.repositories.UserRepository;
-import com.hark.services.SearchAndMatchService;
+import com.hark.services.impl.SearchAndMatchService;
 
 
 /**
@@ -45,7 +45,7 @@ public class UserController {
 		user.setSearching(true);
 		User opponent = searchAndMatchService.searchUser(user);
 		if(null != opponent) {
-			Discussion room = searchAndMatchService.createDiscussionRoom();
+			Discussion room = searchAndMatchService.createDiscussionRoom(user.getId(),opponent.getId());
 			user.setSearching(false);
 			userRepository.save(user);
 			return ResponseEntity.ok(room);

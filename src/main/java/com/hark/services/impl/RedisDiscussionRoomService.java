@@ -1,4 +1,4 @@
-package com.hark.services;
+package com.hark.services.impl;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -12,11 +12,15 @@ import com.hark.model.Discussion;
 import com.hark.model.DiscussionUser;
 import com.hark.model.InstantMessage;
 import com.hark.repositories.DiscussionRepository;
+import com.hark.repositories.OpponentRepository;
+import com.hark.services.DiscussionService;
+import com.hark.services.InstantMessageService;
 import com.hark.utils.Destinations;
 import com.hark.utils.SystemMessages;
 
 @Service
 public class RedisDiscussionRoomService implements DiscussionService {
+	final private int MAX_OPPONENT_ALLOWED=2;
 
 	@Autowired
 	private SimpMessagingTemplate webSocketMessagingTemplate;
@@ -26,6 +30,9 @@ public class RedisDiscussionRoomService implements DiscussionService {
 
 	@Autowired
 	private InstantMessageService instantMessageService;
+	
+	@Autowired
+	private OpponentRepository opponentRepository;
 
 	@Override
 	public Discussion save(Discussion chatRoom) {
@@ -44,7 +51,14 @@ public class RedisDiscussionRoomService implements DiscussionService {
 
 		sendPublicMessage(SystemMessages.welcome(String.valueOf(chatRoom.getId()), joiningUser.getUsername()));
 		updateConnectedUsersViaWebSocket(chatRoom);
+		verifyAndDeleteOpponents(chatRoom);
 		return chatRoom;
+	}
+
+	private void verifyAndDeleteOpponents(Discussion discussionRoom) {
+		if(MAX_OPPONENT_ALLOWED <= discussionRoom.getUsers().size()) {
+			opponentRepository.deleteByDiscussionRoomId(discussionRoom.getId());
+		}
 	}
 
 	@Override

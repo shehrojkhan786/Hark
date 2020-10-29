@@ -31,7 +31,7 @@ import com.hark.model.payload.response.MessageResponse;
 import com.hark.repositories.RoleRepository;
 import com.hark.repositories.UserRepository;
 import com.hark.securty.utils.JwtUtils;
-import com.hark.services.UserDetailsImpl;
+import com.hark.services.impl.UserDetailsImpl;
 
 /**
  * @author shkhan

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.hark.services;
+package com.hark.services.impl;
 
 import javax.transaction.Transactional;
 

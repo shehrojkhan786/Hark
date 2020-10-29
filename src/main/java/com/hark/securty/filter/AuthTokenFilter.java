@@ -22,7 +22,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.hark.securty.utils.JwtUtils;
-import com.hark.services.UserDetailsServiceImpl;
+import com.hark.services.impl.UserDetailsServiceImpl;
 
 /**
  * @author shkhan

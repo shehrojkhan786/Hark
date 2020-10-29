@@ -1,4 +1,4 @@
-package com.hark.services;
+package com.hark.services.impl;
 
 import java.util.List;
 
@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import com.hark.model.Discussion;
 import com.hark.model.InstantMessage;
 import com.hark.repositories.InstantMessageRepository;
+import com.hark.services.DiscussionService;
+import com.hark.services.InstantMessageService;
 
 @Service
 public class CassandraInstantMessageService implements InstantMessageService {

@@ -19,7 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.hark.securty.AuthEntryPointJwt;
 import com.hark.securty.filter.AuthTokenFilter;
-import com.hark.services.UserDetailsServiceImpl;
+import com.hark.services.impl.UserDetailsServiceImpl;
 
 /**
  * @author shkhan
