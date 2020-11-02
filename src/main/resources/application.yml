@@ -49,7 +49,8 @@ server.session.timeout: 600
 hark:
  app:
   jwtSecret: harkSecretKey
-  jwtExpirationMs: 86400000   
+  jwtExpirationMs: 86400000
+ firebase-configuration-file: hark-FCM-admin-sdk.json   
  chat:
    relay:
      host: 192.168.32.129

@@ -41,5 +41,8 @@ public class SignupRequest {
 	
 	@NotEmpty
 	private String name;
+	
+	@NotEmpty
+	private String deviceId;
   
 }

@@ -27,7 +27,7 @@ public class RedisDiscussionRoomService implements DiscussionService {
 
 	@Autowired
 	private DiscussionRepository discussionRepository;
-
+	
 	@Autowired
 	private InstantMessageService instantMessageService;
 	
@@ -94,6 +94,7 @@ public class RedisDiscussionRoomService implements DiscussionService {
 				instantMessage);
 
 		instantMessageService.appendInstantMessageToConversations(instantMessage);
+		
 	}
 
 	@Override

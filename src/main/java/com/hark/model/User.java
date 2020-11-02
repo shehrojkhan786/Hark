@@ -72,12 +72,15 @@ public class User {
 
 	@NotEmpty
 	private String country;
+	
+	@NotEmpty
+	private String deviceId;
 
 	private boolean isActive = true;
 	
 	private boolean isSearching = false;
 
-	public User(String username, String email, String password,Long phone,String politicalParty,String country,String name) {
+	public User(String username, String email, String password,Long phone,String politicalParty,String country,String name,String deviceId) {
 		this.username = username;
 		this.email = email;
 		this.password = password;
@@ -85,6 +88,7 @@ public class User {
 		this.politicalParty = politicalParty;
 		this.country = country;
 		this.name = name;
+		this.deviceId = deviceId;
 	}
 
 	@OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,mappedBy="user")

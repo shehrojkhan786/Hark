@@ -6,6 +6,7 @@ package com.hark.controllers;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,9 +27,13 @@ import org.springframework.web.servlet.ModelAndView;
 import com.hark.model.Discussion;
 import com.hark.model.DiscussionUser;
 import com.hark.model.InstantMessage;
+import com.hark.model.User;
 import com.hark.model.enums.MessageType;
+import com.hark.model.fcm.PushNotificationRequest;
+import com.hark.repositories.UserRepository;
 import com.hark.services.DiscussionService;
 import com.hark.services.InstantMessageService;
+import com.hark.services.impl.fcm.PushNotificationService;
 
 /**
  * @author shkhan
@@ -41,6 +46,12 @@ public class DiscussionContoller {
 
 	@Autowired
 	private InstantMessageService instantMessageService;
+	
+	@Autowired
+	private PushNotificationService pushNotificationService;
+	
+	@Autowired
+	private UserRepository userRepository;
 
 	@Secured("ROLE_ADMIN")
 	@RequestMapping(path = "/chatroom", method = RequestMethod.POST)
@@ -82,6 +93,21 @@ public class DiscussionContoller {
 			chatRoomService.sendPublicMessage(instantMessage);
 		} else {
 			chatRoomService.sendPrivateMessage(instantMessage);
+		}
+		
+		User toUser = null;
+		try {
+			toUser = userRepository.findByUsername(instantMessage.getToUser()).get();
+		}catch(NoSuchElementException ex) {
+			//do nothing
+		}
+		
+		if(null != toUser) {
+		PushNotificationRequest request = PushNotificationRequest.builder()
+				.setMessage(instantMessage.getText())
+				.setTitle("From User: "+instantMessage.getFromUser())
+				.setToken(toUser.getDeviceId()).build();
+			pushNotificationService.sendPushNotificationWithoutData(request);
 		}
 	}
 
