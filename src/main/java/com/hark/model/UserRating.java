@@ -35,7 +35,7 @@ public class UserRating {
 	@Column(name="id")
 	private Long id;
 	
-	private int stars;
+	private float stars;
 	
 	@OneToOne(fetch=FetchType.LAZY,cascade = CascadeType.ALL)
 	@JoinColumn(name = "discussion_id",nullable=false)

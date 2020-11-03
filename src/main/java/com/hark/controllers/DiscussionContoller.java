@@ -9,13 +9,18 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,11 +30,15 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.hark.model.Discussion;
+import com.hark.model.DiscussionFeedback;
 import com.hark.model.DiscussionUser;
 import com.hark.model.InstantMessage;
 import com.hark.model.User;
 import com.hark.model.enums.MessageType;
 import com.hark.model.fcm.PushNotificationRequest;
+import com.hark.model.payload.response.MessageResponse;
+import com.hark.repositories.DiscussionFeedbackRepository;
+import com.hark.repositories.DiscussionUserRepository;
 import com.hark.repositories.UserRepository;
 import com.hark.services.DiscussionService;
 import com.hark.services.InstantMessageService;
@@ -40,16 +49,22 @@ import com.hark.services.impl.fcm.PushNotificationService;
  *
  */
 public class DiscussionContoller {
-	
+
 	@Autowired
 	private DiscussionService chatRoomService;
 
 	@Autowired
+	private DiscussionUserRepository discussionUserRepository;
+
+	@Autowired
+	private DiscussionFeedbackRepository discussionFeedbackRepository;
+
+	@Autowired
 	private InstantMessageService instantMessageService;
-	
+
 	@Autowired
 	private PushNotificationService pushNotificationService;
-	
+
 	@Autowired
 	private UserRepository userRepository;
 
@@ -94,21 +109,43 @@ public class DiscussionContoller {
 		} else {
 			chatRoomService.sendPrivateMessage(instantMessage);
 		}
-		
+
 		User toUser = null;
 		try {
 			toUser = userRepository.findByUsername(instantMessage.getToUser()).get();
-		}catch(NoSuchElementException ex) {
-			//do nothing
+		} catch (NoSuchElementException ex) {
+			// do nothing
 		}
-		
-		if(null != toUser) {
-		PushNotificationRequest request = PushNotificationRequest.builder()
-				.setMessage(instantMessage.getText())
-				.setTitle("From User: "+instantMessage.getFromUser())
-				.setToken(toUser.getDeviceId()).build();
+
+		if (null != toUser) {
+			PushNotificationRequest request = PushNotificationRequest.builder().setMessage(instantMessage.getText())
+					.setTitle("From User: " + instantMessage.getFromUser()).setToken(toUser.getDeviceId()).build();
 			pushNotificationService.sendPushNotificationWithoutData(request);
 		}
+	}
+
+	@PostMapping("/discussionFeedback")
+	public ResponseEntity<?> discussionFeedback(@RequestParam("feedback") String comment,
+			@RequestParam("toUser") String toUserName) {
+
+		DiscussionUser discussionUser = new DiscussionUser();
+		discussionUser.setUsername(toUserName);
+		discussionUserRepository.save(discussionUser);
+
+		DiscussionFeedback discussionFeedback = new DiscussionFeedback();
+		discussionFeedback.setComment(comment);
+		discussionFeedback.setDiscussionUser(discussionUser);
+		discussionFeedbackRepository.save(discussionFeedback);
+
+		ExampleMatcher discussionFeedbackMatcher = ExampleMatcher.matching().withIgnorePaths("id")
+				.withMatcher("discussion_user_id", GenericPropertyMatchers.exact());
+		Example<DiscussionFeedback> userRatingExample = Example.of(discussionFeedback, discussionFeedbackMatcher);
+		boolean isSaved = discussionFeedbackRepository.exists(userRatingExample);
+		if (isSaved) {
+			return ResponseEntity.ok(new MessageResponse("Discussion feedback saved!!!"));
+		}
+		return ResponseEntity.badRequest()
+				.body(new MessageResponse("Unable to save discussion feedback please, try again!!!"));
 	}
 
 }
