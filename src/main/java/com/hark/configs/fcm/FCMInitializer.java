@@ -23,7 +23,7 @@ import com.google.firebase.FirebaseOptions;
  */
 @Service
 public class FCMInitializer {
-	@Value("${app.firebase-configuration-file}")
+	@Value("${hark.firebase-configuration-file}")
 	private String firebaseConfigPath;
 	Logger logger = LoggerFactory.getLogger(FCMInitializer.class);
 
