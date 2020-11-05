@@ -64,11 +64,11 @@ public class SearchAndMatchService {
 
 	private Opponent findWorthyOpponent(Long opponentId1, Long opponentId2) {
 		Opponent worthyOpponent = null;
-		Optional<Opponent> opponent = opponentRepository.findByOpponentId1AndOppoenentId2(opponentId1, opponentId2);
+		Optional<Opponent> opponent = opponentRepository.findByOpponentId1AndOpponentId2(opponentId1, opponentId2);
 		try {
 			worthyOpponent = opponent.get();
 		} catch (NoSuchElementException ex) {
-			opponent = opponentRepository.findByOpponentId1AndOppoenentId2(opponentId2, opponentId1);
+			opponent = opponentRepository.findByOpponentId1AndOpponentId2(opponentId2, opponentId1);
 			try {
 				worthyOpponent = opponent.get();
 			} catch (NoSuchElementException exception) {
