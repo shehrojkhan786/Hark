@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.hark.model.Role;
@@ -132,7 +131,7 @@ public class AuthenticationController {
 	}
 	
 	@PostMapping("/checkEmail")
-	public ResponseEntity<?> checkEmail(@Valid @RequestParam String email) {
+	public ResponseEntity<?> checkEmail(@Valid @RequestBody String email) {
 		if (userRepository.existsByEmail(email)) {
 			return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already present!"));
 		}
