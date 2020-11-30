@@ -123,7 +123,7 @@ public class AuthenticationController {
 	}
 	
 	@PostMapping("/checkUsername")
-	public ResponseEntity<?> checkUsername(@Valid String username) {
+	public ResponseEntity<?> checkUsername(@Valid @RequestBody String username) {
 		if (userRepository.existsByUsername(username)) {
 			return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
 		}
@@ -139,7 +139,7 @@ public class AuthenticationController {
 	}
 	
 	@PostMapping("/checkPhone")
-	public ResponseEntity<?> checkPhone(@Valid Long phone) {
+	public ResponseEntity<?> checkPhone(@Valid @RequestBody Long phone) {
 		if (userRepository.existsByPhone(phone)) {
 			return ResponseEntity.badRequest().body(new MessageResponse("Error: Phone number is already present!"));
 		}
