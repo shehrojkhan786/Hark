@@ -161,7 +161,7 @@ public class UserController {
 	@PostMapping("/saveProfileDetails")
 	public ResponseEntity<?> saveProfileDetails(@Valid @RequestBody Long phone,
 			@Valid @RequestBody String politicalParty, @Valid @RequestBody String country,
-			@Valid @RequestBody String email) {
+			@Valid @RequestBody String email, @Valid @RequestBody String deviceId) {
 		User user = null;
 		try {
 			user = userRepository.findByEmail(email).get();
@@ -179,6 +179,7 @@ public class UserController {
 				user.setCountry(country);
 				user.setPoliticalParty(politicalParty);
 				user.setPhone(phone);
+				user.setDeviceId(deviceId);
 				user.setProfileCompleted(true);
 				userRepository.save(user);
 			} catch (Exception ex) {
