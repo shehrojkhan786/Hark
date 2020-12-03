@@ -22,7 +22,6 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
@@ -64,17 +63,15 @@ public class User {
 	@Email
 	private String email;
 
-	@NotNull
 	private Long phone;
 
-	@NotEmpty
 	private String politicalParty;
 
-	@NotEmpty
 	private String country;
 	
-	@NotEmpty
 	private String deviceId;
+	
+	private boolean isProfileCompleted = false;
 
 	private boolean isActive = true;
 	

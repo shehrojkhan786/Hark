@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -62,8 +63,8 @@ public class UserController {
 	JwtUtils jwtUtils;
 
 	@PostMapping("/searchUserAndCreateRoom")
-	public ResponseEntity<?> searchAndMatch(@Valid String username) {
-		User user = userRepository.findByUsername(username).get();
+	public ResponseEntity<?> searchAndMatch(@Valid @RequestBody String email) {
+		User user = userRepository.findByEmail(email).get();
 		user.setSearching(true);
 		User opponent = searchAndMatchService.searchUser(user);
 		if (null != opponent) {
@@ -76,10 +77,10 @@ public class UserController {
 	}
 
 	@GetMapping("/{username}")
-	public ResponseEntity<?> getUserDetails(@Valid String username) {
+	public ResponseEntity<?> getUserDetails(@Valid @RequestBody String email) {
 		User user = null;
 		try {
-			user = userRepository.findByUsername(username).get();
+			user = userRepository.findByEmail(email).get();
 		} catch (NoSuchElementException ex) {
 			return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is invalid"));
 		}
@@ -88,7 +89,7 @@ public class UserController {
 	}
 
 	@DeleteMapping("/removeRoom")
-	public ResponseEntity<?> removeRoom(@Valid String discussionRoomId) {
+	public ResponseEntity<?> removeRoom(@Valid @RequestBody String discussionRoomId) {
 		boolean isDeleted = searchAndMatchService.deleteDiscussionRoom(discussionRoomId);
 		if (isDeleted) {
 			return ResponseEntity.ok(new MessageResponse("Room deleted!!!"));
@@ -103,15 +104,15 @@ public class UserController {
 	}
 
 	@PostMapping("/userRating")
-	public ResponseEntity<?> userRating(@RequestParam("stars") float stars, @RequestParam("toUser") String toUserName,
+	public ResponseEntity<?> userRating(@RequestParam("stars") float stars, @RequestParam("toUser") String toUserEmail,
 			@RequestParam("discussionId") String discussionId) {
 		User user = null;
 		Discussion discussion = null;
 		try {
-			user = userRepository.findByUsername(toUserName).get();
+			user = userRepository.findByEmail(toUserEmail).get();
 		} catch (NoSuchElementException ex) {
 			// log here
-			return ResponseEntity.badRequest().body(new MessageResponse("Invalid username provided: " + toUserName));
+			return ResponseEntity.badRequest().body(new MessageResponse("Invalid username provided: " + toUserEmail));
 		}
 
 		try {
@@ -137,6 +138,54 @@ public class UserController {
 			return ResponseEntity.ok(new MessageResponse("User rating saved!!!"));
 		}
 		return ResponseEntity.badRequest().body(new MessageResponse("Unable to save ratings please, try again!!!"));
+	}
+
+	@GetMapping("/checkForProfileCompletion")
+	public ResponseEntity<?> isProfileCompleted(@Valid @RequestBody String email) {
+		boolean isProfileCompleted = false;
+		try {
+			isProfileCompleted = userRepository.existsByEmailAndIsProfileCompleted(email, true);
+		} catch (Exception ex) {
+			// log here
+			return ResponseEntity.badRequest()
+					.body(new MessageResponse("Error while checking for profile completion for email: " + email));
+		}
+		if (isProfileCompleted) {
+			return ResponseEntity.ok(new MessageResponse("Profile is completed!!!"));
+		} else {
+			return ResponseEntity.badRequest()
+					.body(new MessageResponse("Profile is not compeleted yet. Please complete profile."));
+		}
+	}
+
+	@PostMapping("/saveProfileDetails")
+	public ResponseEntity<?> saveProfileDetails(@Valid @RequestBody Long phone,
+			@Valid @RequestBody String politicalParty, @Valid @RequestBody String country,
+			@Valid @RequestBody String email) {
+		User user = null;
+		try {
+			user = userRepository.findByEmail(email).get();
+		} catch (NoSuchElementException ex) {
+			// log here
+			return ResponseEntity.badRequest()
+					.body(new MessageResponse("Error while finding user for email: " + email));
+		} catch (Exception ex) {
+			// log here
+			return ResponseEntity.badRequest().body(new MessageResponse("Exception occured: " + ex.getMessage()));
+		}
+
+		if (null != user) {
+			try {
+				user.setCountry(country);
+				user.setPoliticalParty(politicalParty);
+				user.setPhone(phone);
+				user.setProfileCompleted(true);
+				userRepository.save(user);
+			} catch (Exception ex) {
+				return ResponseEntity.badRequest().body(new MessageResponse("Exception occured: " + ex.getMessage()));
+			}
+		}
+		return ResponseEntity.badRequest().body(new MessageResponse("User not found!!!"));
 	}
 
 }

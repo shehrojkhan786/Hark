@@ -19,6 +19,8 @@ import com.hark.model.User;
 public interface UserRepository extends JpaRepository<User, Long> {
 		
 	Optional<User> findByUsername(String username);
+	
+	Optional<User> findByEmail(String email);
 
 	Boolean existsByUsername(String username);
 
@@ -27,5 +29,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	Boolean existsByPhone(Long phone);
 	
 	List<User> findByIsSearchingAndPoliticalPartyNot(Boolean isSearching,String politicalParty);
+	
+	Boolean existsByEmailAndIsProfileCompleted(String email,boolean isProfileCompleted);
 
 }
