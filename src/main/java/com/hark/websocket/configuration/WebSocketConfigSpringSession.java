@@ -21,7 +21,7 @@ public class WebSocketConfigSpringSession extends AbstractSessionWebSocketMessag
 	private Integer relayPort;
 
 	protected void configureStompEndpoints(StompEndpointRegistry registry) {
-		registry.addEndpoint("/messages").withSockJS();
+		registry.addEndpoint("/messages");
 	}
 
 	public void configureMessageBroker(MessageBrokerRegistry registry) {
