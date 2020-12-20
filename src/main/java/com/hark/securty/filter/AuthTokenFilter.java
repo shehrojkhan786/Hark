@@ -4,7 +4,6 @@
 package com.hark.securty.filter;
 
 import java.io.IOException;
-import java.util.Enumeration;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -30,7 +29,7 @@ import com.hark.services.impl.UserDetailsServiceImpl;
  *
  */
 @Component
-public class AuthTokenFilter  extends OncePerRequestFilter {
+public class AuthTokenFilter extends OncePerRequestFilter {
 	@Autowired
 	private JwtUtils jwtUtils;
 
@@ -43,28 +42,12 @@ public class AuthTokenFilter  extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		try {
-			
-			Enumeration<String> headerNames = request.getHeaderNames();
-			if(null != headerNames)
-				while (headerNames.hasMoreElements()) {
-	                System.out.println("Header: " + request.getHeader(headerNames.nextElement()));
-				}
-//			while(request.getHeaderNames().hasMoreElements()) {
-//				System.out.println("Header is: "+request.getHeaderNames().nextElement());
-//			}
-			
+
 			String jwt = parseJwt(request);
 			if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
 				String username = jwtUtils.getUserNameFromJwtToken(jwt);
 
 				UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-						userDetails, null, userDetails.getAuthorities());
-				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-				SecurityContextHolder.getContext().setAuthentication(authentication);
-			}else {
-				UserDetails userDetails = userDetailsService.loadUserByUsername("Omar1");
 				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 						userDetails, null, userDetails.getAuthorities());
 				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
@@ -83,6 +66,11 @@ public class AuthTokenFilter  extends OncePerRequestFilter {
 
 		if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
 			return headerAuth.substring(7, headerAuth.length());
+		} else if (request.getRequestURI().contains("/messages") && StringUtils.hasText(request.getParameter("token"))
+				&& request.getParameter("token").startsWith("Bearer ")) {
+			return headerAuth.substring(7, request.getParameter("token").length());
+		}else {
+			logger.info("no headers and token found...in current URI "+request.getRequestURI());
 		}
 
 		return null;
