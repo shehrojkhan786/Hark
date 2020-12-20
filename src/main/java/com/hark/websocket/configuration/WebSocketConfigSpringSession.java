@@ -1,9 +1,7 @@
 package com.hark.websocket.configuration;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.session.Session;
@@ -36,12 +34,13 @@ public class WebSocketConfigSpringSession extends AbstractSessionWebSocketMessag
 		registry.setApplicationDestinationPrefixes("/discussionRoom");
 	}
 	
-	@Override
-	public void configureClientInboundChannel(ChannelRegistration registration) {
-	     registration.interceptors(rmeSessionChannelInterceptor());
-	}
-	@Bean
-	public RmeSessionChannelInterceptor rmeSessionChannelInterceptor() {
-	   return new RmeSessionChannelInterceptor();
-	}
+//	@Override
+//	public void configureClientInboundChannel(ChannelRegistration registration) {
+//	     registration.interceptors(rmeSessionChannelInterceptor());
+//	}
+	
+//	@Bean
+//	public RmeSessionChannelInterceptor rmeSessionChannelInterceptor() {
+//	   return new RmeSessionChannelInterceptor();
+//	}
 }
