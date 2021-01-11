@@ -66,7 +66,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 		String headerAuth = request.getHeader("Authorization");
 		 Enumeration<String> headerNames = request.getHeaderNames();
 		while(null != headerNames && headerNames.hasMoreElements()) {
-			String name = request.getHeaderNames().nextElement();
+			String name = headerNames.nextElement();
 			logger.info("Header is: "+name+" "+request.getHeader(name));
 		}
 		logger.info("Current URI "+request.getRequestURI());
