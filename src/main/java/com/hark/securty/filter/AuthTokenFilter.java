@@ -4,6 +4,7 @@
 package com.hark.securty.filter;
 
 import java.io.IOException;
+import java.util.Enumeration;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -63,7 +64,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
 	private String parseJwt(HttpServletRequest request) {
 		String headerAuth = request.getHeader("Authorization");
-		while(request.getHeaderNames().hasMoreElements()) {
+		 Enumeration<String> headerNames = request.getHeaderNames();
+		while(null != headerNames && headerNames.hasMoreElements()) {
 			String name = request.getHeaderNames().nextElement();
 			logger.info("Header is: "+name+" "+request.getHeader(name));
 		}
