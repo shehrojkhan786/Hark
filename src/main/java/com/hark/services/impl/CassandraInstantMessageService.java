@@ -24,7 +24,7 @@ public class CassandraInstantMessageService implements InstantMessageService {
 	public void appendInstantMessageToConversations(InstantMessage instantMessage) {
 		if (instantMessage.isFromAdmin() || instantMessage.isPublic()) {
 			Discussion chatRoom = chatRoomService.findById(instantMessage.getChatRoomId());
-			
+			System.out.println("MessageType is in appendInstantMessageToConversion: "+instantMessage.getMessageType());
 			chatRoom.getUsers().forEach(connectedUser -> {
 				instantMessage.setUsername(connectedUser.getUsername());
 				instantMessageRepository.save(instantMessage);

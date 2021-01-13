@@ -74,6 +74,7 @@ public class RedisDiscussionRoomService implements DiscussionService {
 
 	@Override
 	public void sendPublicMessage(InstantMessage instantMessage) {
+		System.out.println("MessageType is: "+instantMessage.getMessageType());
 		webSocketMessagingTemplate.convertAndSend(
 				Destinations.Discussion.publicMessages(instantMessage.getChatRoomId()),
 				instantMessage);
