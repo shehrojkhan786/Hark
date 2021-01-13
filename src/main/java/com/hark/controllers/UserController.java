@@ -64,9 +64,7 @@ public class UserController {
 
 	@PostMapping("/searchUserAndCreateRoom")
 	public ResponseEntity<?> searchAndMatch(@Valid @RequestBody String email) {
-		System.out.println("email is: "+email);
 		User user = userRepository.findByEmail(email).get();
-		System.out.println("User is: "+user.getUsername());
 		user.setSearching(true);
 		User opponent = searchAndMatchService.searchUser(user);
 		if (null != opponent) {

@@ -1,5 +1,6 @@
 package com.hark.model;
 
+import com.hark.model.enums.MessageType;
 import com.hark.utils.SystemUsers;
 
 public class InstantMessageBuilder {
@@ -67,6 +68,7 @@ public class InstantMessageBuilder {
 	public class InstantMessageText {
 		public InstantMessage withText(String text) {
 			instantMessage.setText(text);
+			instantMessage.setMessageType(MessageType.TEXT);
 			return instantMessage;
 		}
 	}
