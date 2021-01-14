@@ -54,7 +54,7 @@ public class InstantMessage {
 		return message.name();
 	}
 	
-	public MessageType getMessage(String message) {
+	public MessageType getMessageType(String message) {
 		return MessageType.valueOf(message);
 	}
 }
