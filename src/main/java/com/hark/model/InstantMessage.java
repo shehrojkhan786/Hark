@@ -31,7 +31,7 @@ public class InstantMessage {
 	private Date date;
 	
 	private String fromUser;
-	private String toUser;
+	private String toUser="All";
 	private String text;
 	private String messageType;
 		
