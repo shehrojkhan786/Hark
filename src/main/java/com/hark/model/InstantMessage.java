@@ -50,11 +50,11 @@ public class InstantMessage {
 		return  null == text ? true : text.isBlank();
 	}
 	
-	public String setMessageType(MessageType message) {
-		return message.name();
+	public void setMessageType(MessageType messageType) {
+		this.messageType = messageType.name();
 	}
 	
-	public MessageType getMessageType(String message) {
-		return MessageType.valueOf(message);
+	public MessageType getMessageType() {
+		return MessageType.valueOf(this.messageType);
 	}
 }
