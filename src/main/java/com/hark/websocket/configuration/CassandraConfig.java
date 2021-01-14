@@ -77,7 +77,7 @@ public class CassandraConfig extends AbstractCassandraConfiguration {
 	    final String script1 = "USE "+getKeyspaceName();
 	    final String script2 = "CREATE TABLE IF NOT EXISTS messages (" + "username text," +
 	    		"chatRoomId text," + "date timestamp," + "fromUser text," + "toUser text," +
-	    		"text text," + "PRIMARY KEY ((username, chatRoomId), date)" +
+	    		"text text," + "PRIMARY KEY ((username, chatRoomId), date)" + " chatMessageType text"+
 	    		") WITH CLUSTERING ORDER BY (date ASC)" ;
 	    return Arrays.asList(script,script1,script2);
 	  }
