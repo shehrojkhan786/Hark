@@ -100,7 +100,7 @@ public class DiscussionContoller {
 		String chatRoomId = headerAccessor.getSessionAttributes().get("chatRoomId").toString();
 		instantMessage.setFromUser(principal.getName());
 		instantMessage.setChatRoomId(chatRoomId);
-		instantMessage.setMessageType(MessageType.valueOf(messageType));
+		instantMessage.setChatMessageType(MessageType.valueOf(messageType));
 
 		if (instantMessage.isPublic()) {
 			chatRoomService.sendPublicMessage(instantMessage);

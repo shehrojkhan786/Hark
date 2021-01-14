@@ -33,7 +33,7 @@ public class InstantMessage {
 	private String fromUser;
 	private String toUser="All";
 	private String text;
-	private String messageType;
+	private String chatMessageType;
 		
 	public InstantMessage() { 
 		this.date = new Date();
@@ -50,11 +50,11 @@ public class InstantMessage {
 		return  null == text ? true : text.isBlank();
 	}
 	
-	public void setMessageType(MessageType messageType) {
-		this.messageType = messageType.name();
+	public void setChatMessageType(MessageType messageType) {
+		this.chatMessageType = messageType.name();
 	}
 	
-	public MessageType getMessageType() {
-		return MessageType.valueOf(this.messageType);
+	public MessageType getCatMessageType() {
+		return MessageType.valueOf(this.chatMessageType);
 	}
 }
