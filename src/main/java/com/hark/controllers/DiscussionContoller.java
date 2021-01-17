@@ -18,6 +18,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,6 +48,7 @@ import com.hark.services.impl.fcm.PushNotificationService;
  * @author shkhan
  *
  */
+@Controller
 public class DiscussionContoller {
 
 	@Autowired
@@ -123,6 +125,7 @@ public class DiscussionContoller {
 	}
 
 	@PostMapping("/discussionFeedback")
+	@ResponseBody
 	public ResponseEntity<?> discussionFeedback(@RequestParam("feedback") String comment,
 			@RequestParam("toUser") String toUserName) {
 
