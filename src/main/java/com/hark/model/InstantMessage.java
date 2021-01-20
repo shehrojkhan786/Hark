@@ -50,11 +50,11 @@ public class InstantMessage {
 		return  null == text ? true : text.isBlank();
 	}
 	
-	public void setChatMessageType(MessageType messageType) {
+	public void setMessageType(MessageType messageType) {
 		this.chatMessageType = messageType.name();
 	}
 	
-	public MessageType getCatMessageType() {
+	public MessageType getMessageType() {
 		return MessageType.valueOf(this.chatMessageType);
 	}
 }

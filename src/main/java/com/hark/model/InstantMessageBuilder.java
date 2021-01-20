@@ -68,7 +68,7 @@ public class InstantMessageBuilder {
 	public class InstantMessageText {
 		public InstantMessage withText(String text) {
 			instantMessage.setText(text);
-			instantMessage.setChatMessageType(MessageType.TEXT);
+			instantMessage.setMessageType(MessageType.TEXT);
 			return instantMessage;
 		}
 	}

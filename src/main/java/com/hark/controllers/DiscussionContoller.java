@@ -98,11 +98,11 @@ public class DiscussionContoller {
 
 	@MessageMapping("/send.message")
 	public void sendMessage(@Payload InstantMessage instantMessage, Principal principal,
-			SimpMessageHeaderAccessor headerAccessor, @RequestParam("messageType") String messageType) {
+			SimpMessageHeaderAccessor headerAccessor) {
 		String chatRoomId = headerAccessor.getSessionAttributes().get("chatRoomId").toString();
 		instantMessage.setFromUser(principal.getName());
 		instantMessage.setChatRoomId(chatRoomId);
-		instantMessage.setChatMessageType(MessageType.valueOf(messageType));
+		instantMessage.setMessageType(MessageType.valueOf(instantMessage.getChatMessageType()));
 
 		if (instantMessage.isPublic()) {
 			chatRoomService.sendPublicMessage(instantMessage);
