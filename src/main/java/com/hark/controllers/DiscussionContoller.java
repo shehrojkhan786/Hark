@@ -97,7 +97,7 @@ public class DiscussionContoller {
 	}
 
 	@MessageMapping("/send.message")
-	public void sendMessage(@Payload Object instantMessage, Principal principal,
+	public void sendMessage(@Payload InstantMessage instantMessage, Principal principal,
 			SimpMessageHeaderAccessor headerAccessor) {
 		String chatRoomId = headerAccessor.getSessionAttributes().get("chatRoomId").toString();
 		System.out.println("Object is "+instantMessage);
