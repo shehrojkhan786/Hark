@@ -1,5 +1,6 @@
 package com.hark.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import com.hark.model.enums.MessageType;
@@ -11,8 +12,13 @@ import lombok.Data;
 
 @AllArgsConstructor
 @Data
-public class InstantMessage2 {
+public class InstantMessage2 implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1053581257691278210L;
+
 	private Date date;
 	
 	private String fromUser;
