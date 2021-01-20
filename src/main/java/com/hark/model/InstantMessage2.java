@@ -48,4 +48,8 @@ public class InstantMessage2 implements Serializable{
 	public MessageType getMessageType() {
 		return MessageType.valueOf(this.chatMessageType);
 	}
+	
+	public String toString() {
+		return "From User: "+this.fromUser+" chatMessageType "+this.chatMessageType+" text "+this.text;
+	}
 }
