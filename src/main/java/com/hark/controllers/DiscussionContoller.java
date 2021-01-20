@@ -6,6 +6,7 @@ package com.hark.controllers;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -32,7 +33,8 @@ import com.hark.model.Discussion;
 import com.hark.model.DiscussionFeedback;
 import com.hark.model.DiscussionUser;
 import com.hark.model.InstantMessage;
-import com.hark.model.InstantMessage2;
+import com.hark.model.User;
+import com.hark.model.enums.MessageType;
 import com.hark.model.payload.response.MessageResponse;
 import com.hark.repositories.DiscussionFeedbackRepository;
 import com.hark.repositories.DiscussionUserRepository;
@@ -94,27 +96,28 @@ public class DiscussionContoller {
 	}
 
 	@MessageMapping("/send.message")
-	public void sendMessage(@Payload InstantMessage2 instantMessage, Principal principal,
+	public void sendMessage(@Payload InstantMessage instantMessage, Principal principal,
 			SimpMessageHeaderAccessor headerAccessor) {
 		String chatRoomId = headerAccessor.getSessionAttributes().get("chatRoomId").toString();
 		System.out.println("InstantMessage2 is "+instantMessage);
-//		instantMessage.setFromUser(principal.getName());
-//		instantMessage.setChatRoomId(chatRoomId);
-//		instantMessage.setMessageType(MessageType.valueOf(instantMessage.getChatMessageType()));
-//
-//		if (instantMessage.isPublic()) {
-//			chatRoomService.sendPublicMessage(instantMessage);
-//		} else {
-//			chatRoomService.sendPrivateMessage(instantMessage);
-//		}
-//
-//		User toUser = null;
-//		try {
-//			toUser = userRepository.findByUsername(instantMessage.getToUser()).get();
-//		} catch (NoSuchElementException ex) {
-//			// do nothing
-//		}
-//
+		instantMessage.setFromUser(principal.getName());
+		instantMessage.setChatRoomId(chatRoomId);
+		instantMessage.setMessageType(MessageType.valueOf(instantMessage.getChatMessageType()));
+
+		if (instantMessage.isPublic()) {
+			chatRoomService.sendPublicMessage(instantMessage);
+		} else {
+			chatRoomService.sendPrivateMessage(instantMessage);
+		}
+
+		User toUser = null;
+		try {
+			toUser = userRepository.findByUsername(instantMessage.getToUser()).get();
+		} catch (NoSuchElementException ex) {
+			// do nothing
+			System.out.println(ex.getMessage());
+		}
+
 //		if (null != toUser) {
 //			PushNotificationRequest request = PushNotificationRequest.builder().setMessage(instantMessage.getText())
 //					.setTitle("From User: " + instantMessage.getFromUser()).setToken(toUser.getDeviceId()).build();
