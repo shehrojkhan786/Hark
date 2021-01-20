@@ -97,31 +97,32 @@ public class DiscussionContoller {
 	}
 
 	@MessageMapping("/send.message")
-	public void sendMessage(@Payload InstantMessage instantMessage, Principal principal,
+	public void sendMessage(@Payload Object instantMessage, Principal principal,
 			SimpMessageHeaderAccessor headerAccessor) {
 		String chatRoomId = headerAccessor.getSessionAttributes().get("chatRoomId").toString();
-		instantMessage.setFromUser(principal.getName());
-		instantMessage.setChatRoomId(chatRoomId);
-		instantMessage.setMessageType(MessageType.valueOf(instantMessage.getChatMessageType()));
-
-		if (instantMessage.isPublic()) {
-			chatRoomService.sendPublicMessage(instantMessage);
-		} else {
-			chatRoomService.sendPrivateMessage(instantMessage);
-		}
-
-		User toUser = null;
-		try {
-			toUser = userRepository.findByUsername(instantMessage.getToUser()).get();
-		} catch (NoSuchElementException ex) {
-			// do nothing
-		}
-
-		if (null != toUser) {
-			PushNotificationRequest request = PushNotificationRequest.builder().setMessage(instantMessage.getText())
-					.setTitle("From User: " + instantMessage.getFromUser()).setToken(toUser.getDeviceId()).build();
-			pushNotificationService.sendPushNotificationWithoutData(request);
-		}
+		System.out.println("Object is "+instantMessage);
+//		instantMessage.setFromUser(principal.getName());
+//		instantMessage.setChatRoomId(chatRoomId);
+//		instantMessage.setMessageType(MessageType.valueOf(instantMessage.getChatMessageType()));
+//
+//		if (instantMessage.isPublic()) {
+//			chatRoomService.sendPublicMessage(instantMessage);
+//		} else {
+//			chatRoomService.sendPrivateMessage(instantMessage);
+//		}
+//
+//		User toUser = null;
+//		try {
+//			toUser = userRepository.findByUsername(instantMessage.getToUser()).get();
+//		} catch (NoSuchElementException ex) {
+//			// do nothing
+//		}
+//
+//		if (null != toUser) {
+//			PushNotificationRequest request = PushNotificationRequest.builder().setMessage(instantMessage.getText())
+//					.setTitle("From User: " + instantMessage.getFromUser()).setToken(toUser.getDeviceId()).build();
+//			pushNotificationService.sendPushNotificationWithoutData(request);
+//		}
 	}
 
 	@PostMapping("/discussionFeedback")
