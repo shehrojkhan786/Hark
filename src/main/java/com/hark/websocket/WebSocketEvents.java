@@ -20,13 +20,7 @@ public class WebSocketEvents {
 	private void handleSessionConnected(SessionConnectEvent event) {
 		System.out.println("I am trying to join the session");
 		SimpMessageHeaderAccessor headers = SimpMessageHeaderAccessor.wrap(event.getMessage());
-		for(String key : headers.getMessageHeaders().keySet()){
-			System.out.println("My session headers key: "+key+" value: "+String.valueOf(headers.getMessageHeaders().get(key)));
-		}
-		for(String key : event.getMessage().getHeaders().keySet()){
-			System.out.println("My message headers key: "+key+" value: "+String.valueOf(event.getMessage().getHeaders().get(key)));
-		}
-		String chatRoomId = String.valueOf(headers.getNativeHeader("chatRoomId").get(0));
+		String chatRoomId = String.valueOf(headers.getNativeHeader("host").get(0));
 		headers.getSessionAttributes().put("chatRoomId", chatRoomId);
 		DiscussionUser joiningUser = new DiscussionUser(event.getUser().getName());
 		chatRoomService.join(joiningUser, chatRoomService.findById(chatRoomId));
@@ -36,10 +30,7 @@ public class WebSocketEvents {
 	@EventListener
 	private void handleSessionDisconnect(SessionDisconnectEvent event) {
 		System.out.println("I am trying to leave the session");
-		SimpMessageHeaderAccessor headers = SimpMessageHeaderAccessor.wrap(event.getMessage());		
-		for(String key : headers.getSessionAttributes().keySet()) {
-			System.out.println("My header is "+String.valueOf(headers.getSessionAttributes().get(key).toString()));
-		}
+		SimpMessageHeaderAccessor headers = SimpMessageHeaderAccessor.wrap(event.getMessage());
 		String chatRoomId = headers.getSessionAttributes().get("chatRoomId").toString();
 		DiscussionUser leavingUser = new DiscussionUser(event.getUser().getName());
 		chatRoomService.leave(leavingUser, chatRoomService.findById(chatRoomId));
