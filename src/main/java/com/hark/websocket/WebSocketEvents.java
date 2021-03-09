@@ -20,7 +20,7 @@ public class WebSocketEvents {
 	private void handleSessionConnected(SessionConnectEvent event) {
 		System.out.println("I am trying to join the session");
 		SimpMessageHeaderAccessor headers = SimpMessageHeaderAccessor.wrap(event.getMessage());
-		String chatRoomId = String.valueOf(headers.getNativeHeader("host").get(0));
+		String chatRoomId = String.valueOf(headers.getNativeHeader("login").get(0));
 		headers.getSessionAttributes().put("chatRoomId", chatRoomId);
 		DiscussionUser joiningUser = new DiscussionUser(event.getUser().getName());
 		chatRoomService.join(joiningUser, chatRoomService.findById(chatRoomId));
