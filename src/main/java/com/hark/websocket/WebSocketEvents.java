@@ -20,18 +20,15 @@ public class WebSocketEvents {
 	private void handleSessionConnected(SessionConnectEvent event) {
 		System.out.println("I am trying to join the session");
 		SimpMessageHeaderAccessor headers = SimpMessageHeaderAccessor.wrap(event.getMessage());
-		System.out.println("I am trying to get chatid from the headers");
-		System.out.println("My session Id is: "+headers.getSessionId());
 		for(String key : headers.getMessageHeaders().keySet()){
 			System.out.println("My session headers key: "+key+" value: "+String.valueOf(headers.getMessageHeaders().get(key)));
 		}
-		System.out.println("My session Id is: "+headers.getSessionId());
-		System.out.println("Chatroom id is: "+headers.getNativeHeader("chatRoomId").get(0));
+		for(String key : event.getMessage().getHeaders().keySet()){
+			System.out.println("My message headers key: "+key+" value: "+String.valueOf(event.getMessage().getHeaders().get(key)));
+		}
 		String chatRoomId = String.valueOf(headers.getNativeHeader("chatRoomId").get(0));
-		//System.out.println("ChatRoom id from message headers is: "+ chatRoomId+" something");
 		headers.getSessionAttributes().put("chatRoomId", chatRoomId);
-		System.out.println("I am putting chatid "+chatRoomId+" in the session");
-		DiscussionUser joiningUser = new DiscussionUser(event.getUser().getName());		
+		DiscussionUser joiningUser = new DiscussionUser(event.getUser().getName());
 		chatRoomService.join(joiningUser, chatRoomService.findById(chatRoomId));
 		System.out.println("I am able to join the session");
 	}
