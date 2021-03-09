@@ -26,9 +26,9 @@ public class WebSocketEvents {
 			System.out.println("My session headers key: "+key+" value: "+String.valueOf(headers.getMessageHeaders().get(key)));
 		}
 		System.out.println("My session Id is: "+headers.getSessionId());
-		System.out.println("Chatroom id is: "+headers.getNativeHeader("chatRoomId"));
-		String chatRoomId = String.valueOf(headers.getMessageHeaders().get("chatRoomId"));
-		System.out.println("ChatRoom id from message headers is: "+ chatRoomId+" something");
+		System.out.println("Chatroom id is: "+headers.getNativeHeader("chatRoomId").get(0));
+		String chatRoomId = String.valueOf(headers.getNativeHeader("chatRoomId").get(0));
+		//System.out.println("ChatRoom id from message headers is: "+ chatRoomId+" something");
 		headers.getSessionAttributes().put("chatRoomId", chatRoomId);
 		System.out.println("I am putting chatid "+chatRoomId+" in the session");
 		DiscussionUser joiningUser = new DiscussionUser(event.getUser().getName());		
