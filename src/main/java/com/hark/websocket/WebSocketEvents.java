@@ -31,7 +31,7 @@ public class WebSocketEvents {
 	private void handleSessionDisconnect(SessionDisconnectEvent event) {
 		System.out.println("I am trying to leave the session");
 		SimpMessageHeaderAccessor headers = SimpMessageHeaderAccessor.wrap(event.getMessage());
-		String chatRoomId = headers.getSessionAttributes().get("chatRoomId").toString();
+		String chatRoomId = headers.getSessionAttributes().get("login").toString();
 		DiscussionUser leavingUser = new DiscussionUser(event.getUser().getName());
 		chatRoomService.leave(leavingUser, chatRoomService.findById(chatRoomId));
 		System.out.println("I am able to leave the session");
