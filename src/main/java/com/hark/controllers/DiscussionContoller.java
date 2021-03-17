@@ -19,14 +19,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.hark.model.Discussion;
@@ -86,6 +79,19 @@ public class DiscussionContoller {
 	public List<DiscussionUser> listChatRoomConnectedUsersOnSubscribe(SimpMessageHeaderAccessor headerAccessor) {
 		String chatRoomId = headerAccessor.getSessionAttributes().get("chatRoomId").toString();
 		return new ArrayList<DiscussionUser>(chatRoomService.findById(chatRoomId).getUsers());
+	}
+
+	@GetMapping("/discussionRoom/connectedUsers")
+	@ResponseBody
+	public ResponseEntity<?> getConnectedUsersForUser(@RequestParam("username") String username) {
+		List<Discussion> userDiscussions = null;
+		try{
+			userDiscussions = chatRoomService.findByUsername(username);
+		}catch(Exception exception){
+			return ResponseEntity.badRequest()
+					.body(new MessageResponse("No discussions found for user: " + username));
+		}
+		return ResponseEntity.ok(userDiscussions);
 	}
 
 	@SubscribeMapping("/old.messages")
@@ -149,5 +155,4 @@ public class DiscussionContoller {
 		return ResponseEntity.badRequest()
 				.body(new MessageResponse("Unable to save discussion feedback please, try again!!!"));
 	}
-
 }
