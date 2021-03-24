@@ -66,6 +66,7 @@ public class UserController {
 	public ResponseEntity<?> searchAndMatch(@Valid @RequestBody String email) {
 		User user = userRepository.findByEmail(email).get();
 		user.setSearching(true);
+		userRepository.save(user);
 		User opponent = searchAndMatchService.searchUser(user);
 		if (null != opponent) {
 			Discussion room = searchAndMatchService.createDiscussionRoom(user.getId(), opponent.getId());
@@ -73,6 +74,8 @@ public class UserController {
 			userRepository.save(user);
 			return ResponseEntity.ok(room);
 		}
+		user.setSearching(false);
+		userRepository.save(user);
 		return ResponseEntity.badRequest().body(new MessageResponse("No opponent found, Try again later"));
 	}
 
