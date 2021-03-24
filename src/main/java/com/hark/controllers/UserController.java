@@ -8,20 +8,14 @@ import java.util.NoSuchElementException;
 
 import javax.validation.Valid;
 
+import com.hark.model.enums.ResponseStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.hark.model.Badge;
 import com.hark.model.Discussion;
@@ -64,6 +58,7 @@ public class UserController {
 
 	@PostMapping("/searchUserAndCreateRoom")
 	public ResponseEntity<?> searchAndMatch(@Valid @RequestBody String email) {
+		MessageResponse response = new MessageResponse();
 		User user = userRepository.findByEmail(email).get();
 		user.setSearching(true);
 		userRepository.save(user);
@@ -72,23 +67,33 @@ public class UserController {
 			Discussion room = searchAndMatchService.createDiscussionRoom(user.getId(), opponent.getId());
 			user.setSearching(false);
 			userRepository.save(user);
+			response.setData(room);
+			response.setMessage("Opponents Found");
+			response.setStatus(ResponseStatus.SUCCESS.name());
 			return ResponseEntity.ok(room);
 		}
 		user.setSearching(false);
 		userRepository.save(user);
-		return ResponseEntity.badRequest().body(new MessageResponse("No opponent found, Try again later"));
+		response.setMessage("No opponent found, Try again later");
+		response.setStatus(ResponseStatus.FAILED.name());
+		return ResponseEntity.ok().body(response);
 	}
 
 	@GetMapping("/{username}")
 	public ResponseEntity<?> getUserDetails(@Valid @RequestBody String email) {
+		MessageResponse response = new MessageResponse();
 		User user = null;
 		try {
 			user = userRepository.findByEmail(email).get();
 		} catch (NoSuchElementException ex) {
-			return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is invalid"));
+			response.setStatus(ResponseStatus.ERROR.name());
+			response.setMessage("Error: Username is invalid");
+			return ResponseEntity.ok(response);
 		}
-
-		return ResponseEntity.ok(user);
+		response.setData(user);
+		response.setMessage("Username is valid");
+		response.setStatus(ResponseStatus.SUCCESS.name());
+		return ResponseEntity.ok(response);
 	}
 
 	@DeleteMapping("/removeRoom")
