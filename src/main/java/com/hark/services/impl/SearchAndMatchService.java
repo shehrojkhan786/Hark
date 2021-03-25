@@ -47,7 +47,7 @@ public class SearchAndMatchService {
 
 	public Discussion createDiscussionRoom(Long opponentId1, Long opponentId2) {
 		Discussion discussRoom = new Discussion();
-		Opponent opponent = findWorthyOpponent(opponentId1, opponentId2);
+		Opponent opponent = this.findWorthyOpponent(opponentId1, opponentId2);
 		if (null == opponent) {
 			discussRoom = discussionRepository.save(discussRoom);
 			opponent = new Opponent(opponentId1, opponentId2, discussRoom.getId());
@@ -87,6 +87,15 @@ public class SearchAndMatchService {
 			return true;
 		}
 		return false;
+	}
+
+	public Discussion checkAndGetRoomForUser(Long userId){
+		Discussion discussionRoom=null;
+		Opponent opponent = opponentRepository.findByOpponentId1OrOpponentId2(userId, userId).orElse(new Opponent());
+		if(null != opponent.getId()){
+			discussionRoom = discussionRepository.findById(opponent.getDiscussionRoomId()).get();
+		}
+		return  discussionRoom;
 	}
 
 }

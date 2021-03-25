@@ -9,6 +9,7 @@ import java.util.NoSuchElementException;
 import javax.validation.Valid;
 
 import com.hark.model.enums.ResponseStatus;
+import com.hark.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -22,10 +23,6 @@ import com.hark.model.Discussion;
 import com.hark.model.User;
 import com.hark.model.UserRating;
 import com.hark.model.payload.response.MessageResponse;
-import com.hark.repositories.BadgeRepository;
-import com.hark.repositories.DiscussionRepository;
-import com.hark.repositories.RatingRepository;
-import com.hark.repositories.UserRepository;
 import com.hark.securty.utils.JwtUtils;
 import com.hark.services.impl.SearchAndMatchService;
 
@@ -66,23 +63,27 @@ public class UserController {
         userRepository.save(user);
         boolean isOpponentFound = false;
         int searchCounter = 0;
-        Discussion room = null;
-        while (searchCounter < MAX_COUNTER) {
-            User opponent = searchAndMatchService.searchUser(user);
-            if (null != opponent) {
-                room = searchAndMatchService.createDiscussionRoom(user.getId(), opponent.getId());
-                isOpponentFound = true;
-            }
-            if (isOpponentFound) {
-                break;
-            } else {
-				searchCounter++;
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException exception) {
-                    System.out.println("Error while searching for user.");
+        Discussion room = this.checkAndGetRoomForUser(user.getId());
+        if(null == room) {
+            while (searchCounter < MAX_COUNTER) {
+                User opponent = searchAndMatchService.searchUser(user);
+                if (null != opponent) {
+                    room = searchAndMatchService.createDiscussionRoom(user.getId(), opponent.getId());
+                    isOpponentFound = true;
+                }
+                if (isOpponentFound) {
+                    break;
+                } else {
+                    searchCounter++;
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException exception) {
+                        System.out.println("Error while searching for user.");
+                    }
                 }
             }
+        }else{
+            isOpponentFound=true;
         }
         user.setSearching(false);
         userRepository.save(user);
@@ -95,6 +96,10 @@ public class UserController {
             response.setStatus(ResponseStatus.FAILED.name());
         }
         return ResponseEntity.ok().body(response);
+    }
+
+    private Discussion checkAndGetRoomForUser(Long userId){
+        return searchAndMatchService.checkAndGetRoomForUser(userId);
     }
 
     @GetMapping("/{username}")
