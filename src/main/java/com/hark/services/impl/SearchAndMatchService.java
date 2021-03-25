@@ -3,20 +3,21 @@
  */
 package com.hark.services.impl;
 
+import com.hark.model.Discussion;
+import com.hark.model.DiscussionUser;
+import com.hark.model.Opponent;
+import com.hark.model.User;
+import com.hark.repositories.DiscussionRepository;
+import com.hark.repositories.DiscussionUserRepository;
+import com.hark.repositories.OpponentRepository;
+import com.hark.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Random;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.hark.model.Discussion;
-import com.hark.model.Opponent;
-import com.hark.model.User;
-import com.hark.repositories.DiscussionRepository;
-import com.hark.repositories.OpponentRepository;
-import com.hark.repositories.UserRepository;
 
 /**
  * @author shkhan
@@ -30,6 +31,9 @@ public class SearchAndMatchService {
 
 	@Autowired
 	private DiscussionRepository discussionRepository;
+
+	@Autowired
+	private DiscussionUserRepository discussionUserRepository;
 
 	@Autowired
 	private OpponentRepository opponentRepository;
@@ -49,6 +53,7 @@ public class SearchAndMatchService {
 		Discussion discussRoom = new Discussion();
 		Opponent opponent = this.findWorthyOpponent(opponentId1, opponentId2);
 		if (null == opponent) {
+			this.saveDiscussionUser(opponentId1, opponentId2, discussRoom);
 			discussRoom = discussionRepository.save(discussRoom);
 			opponent = new Opponent(opponentId1, opponentId2, discussRoom.getId());
 			opponentRepository.save(opponent);
@@ -56,10 +61,26 @@ public class SearchAndMatchService {
 			try {
 				discussRoom = discussionRepository.findById(opponent.getDiscussionRoomId()).get();
 			} catch (NoSuchElementException ex) {
+				this.saveDiscussionUser(opponentId1, opponentId2, discussRoom);
 				discussRoom = discussionRepository.save(discussRoom);
 			}
 		}
 		return discussRoom;
+	}
+
+	private void saveDiscussionUser(Long opponentId1, Long opponentId2, Discussion discussRoom) {
+		User firstUser = userRepository.findById(opponentId1).get();
+		User secondUser = userRepository.findById(opponentId2).get();
+
+		DiscussionUser discussionUser = new DiscussionUser();
+		discussionUser.setUsername(firstUser.getUsername());
+		discussionUserRepository.save(discussionUser);
+		discussRoom.addUser(discussionUser);
+
+		discussionUser = new DiscussionUser();
+		discussionUser.setUsername(secondUser.getUsername());
+		discussionUserRepository.save(discussionUser);
+		discussRoom.addUser(discussionUser);
 	}
 
 	private Opponent findWorthyOpponent(Long opponentId1, Long opponentId2) {
