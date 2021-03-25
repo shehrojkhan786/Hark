@@ -9,6 +9,7 @@ import java.util.NoSuchElementException;
 import javax.validation.Valid;
 
 import com.hark.model.enums.ResponseStatus;
+import com.hark.model.payload.request.JSONRequest;
 import com.hark.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -56,9 +57,9 @@ public class UserController {
     final int MAX_COUNTER = 5;
 
     @PostMapping("/searchUserAndCreateRoom")
-    public ResponseEntity<?> searchAndMatch(@Valid @RequestBody String email) {
+    public ResponseEntity<?> searchAndMatch(@Valid @RequestBody JSONRequest request) {
         MessageResponse response = new MessageResponse();
-        User user = userRepository.findByEmail(email).get();
+        User user = userRepository.findByEmail(request.getEmail()).get();
         user.setSearching(true);
         userRepository.save(user);
         boolean isOpponentFound = false;
@@ -103,11 +104,11 @@ public class UserController {
     }
 
     @GetMapping("/{username}")
-    public ResponseEntity<?> getUserDetails(@Valid @RequestBody String email) {
+    public ResponseEntity<?> getUserDetails(@Valid @RequestBody JSONRequest request) {
         MessageResponse response = new MessageResponse();
         User user = null;
         try {
-            user = userRepository.findByEmail(email).get();
+            user = userRepository.findByEmail(request.getEmail()).get();
         } catch (NoSuchElementException ex) {
             response.setStatus(ResponseStatus.ERROR.name());
             response.setMessage("Error: Username is invalid");
