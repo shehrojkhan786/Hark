@@ -89,9 +89,6 @@ public class UserController {
         userRepository.save(user);
 
         if (isOpponentFound) {
-            room.setUser(user);
-            room.setId(null);
-            discussionRepository.save(room);
             response.setData(room);
             response.setMessage("Opponents Found");
             response.setStatus(ResponseStatus.SUCCESS.name());

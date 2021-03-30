@@ -40,8 +40,10 @@ public class Discussion {
 	private UserRating userRating;
 	
 	@OneToMany(fetch=FetchType.LAZY,cascade = CascadeType.ALL)
-	@JoinColumn(name="discussion_id")
+	@JoinColumn(name="discussion_id",referencedColumnName="discussion_id")
 	private Set<DiscussionUser> users =  new HashSet<>(0);
+
+	private boolean isActive=true;
 	
 	public void addUser(DiscussionUser user) {
 		this.users.add(user);
@@ -58,5 +60,8 @@ public class Discussion {
 		this.discussionId = uuid.toString();
 	}
 
-	
+	public Discussion(String discussionId){
+		this.discussionId = discussionId;
+	}
+
 }
