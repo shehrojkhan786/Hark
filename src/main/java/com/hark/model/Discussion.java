@@ -28,7 +28,7 @@ public class Discussion implements Serializable {
 	@Column(name="id")
 	private Long id;
 
-	@Column(name="discussion_id")
+	@Column(name="discussion_id",unique = false)
 	private String discussionId;
 
 	@ManyToOne
