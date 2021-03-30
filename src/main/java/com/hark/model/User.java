@@ -103,6 +103,6 @@ public class User {
 	@JoinColumn(name = "role_id")	
 	private Role role;
 
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL,mappedBy = "user")
 	private Set<Discussion> chatRooms = new HashSet<>(0);
 }

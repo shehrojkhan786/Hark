@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import com.hark.model.enums.ResponseStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -76,12 +77,15 @@ public class AuthenticationController {
 
 	@PostMapping("/signup")
 	public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+		MessageResponse response = new MessageResponse();
 //		if (userRepository.existsByUsername(signUpRequest.getUsername())) {
 //			return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
 //		}
 
 		if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-			return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
+			response.setMessage("Error: Email is already in use!");
+			response.setStatus(ResponseStatus.ERROR.name());
+			return ResponseEntity.ok(response);
 		}
 
 //		if (userRepository.existsByPhone(signUpRequest.getPhone())) {
@@ -118,8 +122,9 @@ public class AuthenticationController {
 
 		user.setRole(userRole);
 		userRepository.save(user);
-
-		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+		response.setMessage("User registered successfully!");
+		response.setStatus(ResponseStatus.SUCCESS.name());
+		return ResponseEntity.ok(response);
 	}
 	
 	@PostMapping("/checkUsername")
