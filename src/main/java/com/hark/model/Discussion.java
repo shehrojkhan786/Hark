@@ -28,8 +28,6 @@ public class Discussion implements Serializable {
 	@Column(name="id")
 	private Long id;
 
-	@GeneratedValue(generator = "uuid")
-	@GenericGenerator(name = "uuid", strategy = "uuid2")
 	@Column(name="discussion_id")
 	private String discussionId;
 
