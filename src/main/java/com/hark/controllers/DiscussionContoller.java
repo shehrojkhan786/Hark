@@ -82,7 +82,7 @@ public class DiscussionContoller {
         return new ArrayList<DiscussionUser>(chatRoomService.findById(chatRoomId).getUsers());
     }
 
-    @GetMapping("/discussionRoom/connectedUsers")
+    @GetMapping("/api/discussionRoom/connectedUsers")
     @ResponseBody
     public ResponseEntity<?> getConnectedUsersForUser(@RequestParam("username") String username) {
         MessageResponse response = new MessageResponse();
