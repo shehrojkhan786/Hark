@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.hark.controllers;
 
@@ -43,116 +43,120 @@ import com.hark.services.impl.fcm.PushNotificationService;
 @Controller
 public class DiscussionContoller {
 
-	@Autowired
-	private DiscussionService chatRoomService;
+    @Autowired
+    private DiscussionService chatRoomService;
 
-	@Autowired
-	private DiscussionUserRepository discussionUserRepository;
+    @Autowired
+    private DiscussionUserRepository discussionUserRepository;
 
-	@Autowired
-	private DiscussionFeedbackRepository discussionFeedbackRepository;
+    @Autowired
+    private DiscussionFeedbackRepository discussionFeedbackRepository;
 
-	@Autowired
-	private InstantMessageService instantMessageService;
+    @Autowired
+    private InstantMessageService instantMessageService;
 
-	@Autowired
-	private PushNotificationService pushNotificationService;
+    @Autowired
+    private PushNotificationService pushNotificationService;
 
-	@Autowired
-	private UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-	@RequestMapping(path = "/chatroom", method = RequestMethod.POST)
-	@ResponseBody
-	@ResponseStatus(code = HttpStatus.CREATED)
-	public Discussion createChatRoom(@RequestBody Discussion chatRoom) {
-		return chatRoomService.save(chatRoom);
-	}
+    @RequestMapping(path = "/chatroom", method = RequestMethod.POST)
+    @ResponseBody
+    @ResponseStatus(code = HttpStatus.CREATED)
+    public Discussion createChatRoom(@RequestBody Discussion chatRoom) {
+        return chatRoomService.save(chatRoom);
+    }
 
-	@RequestMapping("/chatroom/{chatRoomId}")
-	public ModelAndView join(@PathVariable String chatRoomId, Principal principal) {
-		ModelAndView modelAndView = new ModelAndView("chatroom");
-		modelAndView.addObject("chatRoom", chatRoomService.findById(chatRoomId));
-		return modelAndView;
-	}
+    @RequestMapping("/chatroom/{chatRoomId}")
+    public ModelAndView join(@PathVariable String chatRoomId, Principal principal) {
+        ModelAndView modelAndView = new ModelAndView("chatroom");
+        modelAndView.addObject("chatRoom", chatRoomService.findById(chatRoomId));
+        return modelAndView;
+    }
 
-	@SubscribeMapping("/connected.users")
-	public List<DiscussionUser> listChatRoomConnectedUsersOnSubscribe(SimpMessageHeaderAccessor headerAccessor) {
-		String chatRoomId = headerAccessor.getSessionAttributes().get("chatRoomId").toString();
-		return new ArrayList<DiscussionUser>(chatRoomService.findById(chatRoomId).getUsers());
-	}
+    @SubscribeMapping("/connected.users")
+    public List<DiscussionUser> listChatRoomConnectedUsersOnSubscribe(SimpMessageHeaderAccessor headerAccessor) {
+        String chatRoomId = headerAccessor.getSessionAttributes().get("chatRoomId").toString();
+        return new ArrayList<DiscussionUser>(chatRoomService.findById(chatRoomId).getUsers());
+    }
 
-	@GetMapping("/discussionRoom/connectedUsers")
-	@ResponseBody
-	public ResponseEntity<?> getConnectedUsersForUser(@RequestParam("username") String username) {
-		List<Discussion> userDiscussions = null;
-		try{
-			userDiscussions = chatRoomService.findByUsername(username);
-		}catch(Exception exception){
-			return ResponseEntity.badRequest()
-					.body(new MessageResponse("No discussions found for user: " + username));
-		}
-		return ResponseEntity.ok(userDiscussions);
-	}
+    @GetMapping("/discussionRoom/connectedUsers")
+    @ResponseBody
+    public ResponseEntity<?> getConnectedUsersForUser(@RequestParam("username") String username) {
+        MessageResponse response = new MessageResponse();
+        List<Discussion> userDiscussions = null;
+        try {
+            userDiscussions = discussionUserRepository.findByUsername(username);
+            response.setStatus(com.hark.model.enums.ResponseStatus.SUCCESS.name());
+            response.setMessage("Users found");
+            response.setData(userDiscussions);
+        } catch (Exception exception) {
+            response.setStatus(com.hark.model.enums.ResponseStatus.ERROR.name());
+            response.setMessage("No discussions found for user: " + username);
+        }
+        return ResponseEntity.ok(userDiscussions);
+    }
 
-	@SubscribeMapping("/old.messages")
-	public List<InstantMessage> listOldMessagesFromUserOnSubscribe(Principal principal,
-			SimpMessageHeaderAccessor headerAccessor) {
-		String chatRoomId = headerAccessor.getSessionAttributes().get("chatRoomId").toString();
-		return instantMessageService.findAllInstantMessagesFor(principal.getName(), chatRoomId);
-	}
+    @SubscribeMapping("/old.messages")
+    public List<InstantMessage> listOldMessagesFromUserOnSubscribe(Principal principal,
+                                                                   SimpMessageHeaderAccessor headerAccessor) {
+        String chatRoomId = headerAccessor.getSessionAttributes().get("chatRoomId").toString();
+        return instantMessageService.findAllInstantMessagesFor(principal.getName(), chatRoomId);
+    }
 
-	@MessageMapping("/send.message")
-	public void sendMessage(@Payload InstantMessage instantMessage, Principal principal,
-			SimpMessageHeaderAccessor headerAccessor) {
-		String chatRoomId = headerAccessor.getSessionAttributes().get("chatRoomId").toString();
-		System.out.println("InstantMessage2 is "+instantMessage);
-		instantMessage.setFromUser(principal.getName());
-		instantMessage.setChatRoomId(chatRoomId);
-		instantMessage.setMessageType(MessageType.valueOf(instantMessage.getChatMessageType()));
+    @MessageMapping("/send.message")
+    public void sendMessage(@Payload InstantMessage instantMessage, Principal principal,
+                            SimpMessageHeaderAccessor headerAccessor) {
+        String chatRoomId = headerAccessor.getSessionAttributes().get("chatRoomId").toString();
+        System.out.println("InstantMessage2 is " + instantMessage);
+        instantMessage.setFromUser(principal.getName());
+        instantMessage.setChatRoomId(chatRoomId);
+        instantMessage.setMessageType(MessageType.valueOf(instantMessage.getChatMessageType()));
 
-		if (instantMessage.isPublic()) {
-			chatRoomService.sendPublicMessage(instantMessage);
-		} else {
-			chatRoomService.sendPrivateMessage(instantMessage);
-		}
+        if (instantMessage.isPublic()) {
+            chatRoomService.sendPublicMessage(instantMessage);
+        } else {
+            chatRoomService.sendPrivateMessage(instantMessage);
+        }
 
-		User toUser = null;
-		try {
-			toUser = userRepository.findByUsername(instantMessage.getToUser()).get();
-		} catch (NoSuchElementException ex) {
-			// do nothing
-			System.out.println(ex.getMessage());
-		}
+        User toUser = null;
+        try {
+            toUser = userRepository.findByUsername(instantMessage.getToUser()).get();
+        } catch (NoSuchElementException ex) {
+            // do nothing
+            System.out.println(ex.getMessage());
+        }
 
 //		if (null != toUser) {
 //			PushNotificationRequest request = PushNotificationRequest.builder().setMessage(instantMessage.getText())
 //					.setTitle("From User: " + instantMessage.getFromUser()).setToken(toUser.getDeviceId()).build();
 //			pushNotificationService.sendPushNotificationWithoutData(request);
 //		}
-	}
+    }
 
-	@PostMapping("/discussionFeedback")
-	@ResponseBody
-	public ResponseEntity<?> discussionFeedback(@RequestParam("feedback") String comment,
-			@RequestParam("toUser") String toUserName) {
+    @PostMapping("/discussionFeedback")
+    @ResponseBody
+    public ResponseEntity<?> discussionFeedback(@RequestParam("feedback") String comment,
+                                                @RequestParam("toUser") String toUserName) {
 
-		DiscussionUser discussionUser = new DiscussionUser();
-		discussionUser.setUsername(toUserName);
-		discussionUserRepository.save(discussionUser);
+        DiscussionUser discussionUser = new DiscussionUser();
+        discussionUser.setUsername(toUserName);
+        discussionUserRepository.save(discussionUser);
 
-		DiscussionFeedback discussionFeedback = new DiscussionFeedback();
-		discussionFeedback.setComment(comment);
-		discussionFeedback.setDiscussionUser(discussionUser);
-		discussionFeedbackRepository.save(discussionFeedback);
+        DiscussionFeedback discussionFeedback = new DiscussionFeedback();
+        discussionFeedback.setComment(comment);
+        discussionFeedback.setDiscussionUser(discussionUser);
+        discussionFeedbackRepository.save(discussionFeedback);
 
-		ExampleMatcher discussionFeedbackMatcher = ExampleMatcher.matching().withIgnorePaths("id")
-				.withMatcher("discussion_user_id", GenericPropertyMatchers.exact());
-		Example<DiscussionFeedback> userRatingExample = Example.of(discussionFeedback, discussionFeedbackMatcher);
-		boolean isSaved = discussionFeedbackRepository.exists(userRatingExample);
-		if (isSaved) {
-			return ResponseEntity.ok(new MessageResponse("Discussion feedback saved!!!"));
-		}
-		return ResponseEntity.badRequest()
-				.body(new MessageResponse("Unable to save discussion feedback please, try again!!!"));
-	}
+        ExampleMatcher discussionFeedbackMatcher = ExampleMatcher.matching().withIgnorePaths("id")
+                .withMatcher("discussion_user_id", GenericPropertyMatchers.exact());
+        Example<DiscussionFeedback> userRatingExample = Example.of(discussionFeedback, discussionFeedbackMatcher);
+        boolean isSaved = discussionFeedbackRepository.exists(userRatingExample);
+        if (isSaved) {
+            return ResponseEntity.ok(new MessageResponse("Discussion feedback saved!!!"));
+        }
+        return ResponseEntity.badRequest()
+                .body(new MessageResponse("Unable to save discussion feedback please, try again!!!"));
+    }
 }
