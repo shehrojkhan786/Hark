@@ -121,9 +121,9 @@ public class RedisDiscussionRoomService implements DiscussionService {
 		return false;
 	}
 
-	@Override
+	/*@Override
 	public List<Discussion> findByUsername(String username){
 		return discussionRepository.findByUsername(username);
-	}
+	}*/
 	
 }
