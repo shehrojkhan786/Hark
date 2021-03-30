@@ -11,12 +11,11 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
-
+import java.util.UUID;
 /**
  * @author shkhan
  *
  */
-@NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Entity
@@ -52,6 +51,11 @@ public class Discussion {
 	}
 	public int getNumberOfConnectedUsers(){
 		return this.users.size();
+	}
+
+	public Discussion(){
+		UUID uuid = UUID.randomUUID();
+		this.discussionId = uuid.toString();
 	}
 
 	
