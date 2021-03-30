@@ -25,15 +25,18 @@ import java.util.Set;
 public class Discussion {
 	
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name="id")
+	private Long id;
+
 	@GeneratedValue(generator = "uuid")
 	@GenericGenerator(name = "uuid", strategy = "uuid2")
-	@Column(name="id")
-	private String id;
+	private String discussionId;
 
 	@ManyToOne
 	@JoinColumn(name="user_id")
 	private User user;
-	
+
 	@OneToOne(mappedBy ="chatRoom",cascade = CascadeType.ALL,fetch=FetchType.EAGER)
 	private UserRating userRating;
 	

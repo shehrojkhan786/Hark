@@ -1,13 +1,5 @@
 package com.hark.services.impl;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Service;
-
 import com.hark.model.Discussion;
 import com.hark.model.DiscussionUser;
 import com.hark.model.InstantMessage;
@@ -17,6 +9,12 @@ import com.hark.services.DiscussionService;
 import com.hark.services.InstantMessageService;
 import com.hark.utils.Destinations;
 import com.hark.utils.SystemMessages;
+import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class RedisDiscussionRoomService implements DiscussionService {
@@ -41,7 +39,12 @@ public class RedisDiscussionRoomService implements DiscussionService {
 
 	@Override
 	public Discussion findById(String chatRoomId) {
-		return discussionRepository.findById(chatRoomId).orElseThrow();
+		Discussion discussionRoom = null;
+		List<Discussion> discussions = discussionRepository.findByDiscussionId(chatRoomId);
+		if(CollectionUtils.isNotEmpty(discussions)){
+			discussionRoom = discussions.get(0);
+		}
+		return discussionRoom;
 	}
 
 	@Override
@@ -57,7 +60,7 @@ public class RedisDiscussionRoomService implements DiscussionService {
 
 	private void verifyAndDeleteOpponents(Discussion discussionRoom) {
 		if(MAX_OPPONENT_ALLOWED <= discussionRoom.getUsers().size()) {
-			opponentRepository.deleteByDiscussionRoomId(discussionRoom.getId());
+			opponentRepository.deleteByDiscussionRoomId(discussionRoom.getDiscussionId());
 		}
 	}
 
@@ -111,12 +114,15 @@ public class RedisDiscussionRoomService implements DiscussionService {
 
 	@Override
 	public boolean deleteById(String id) {
-		discussionRepository.deleteById(id);
-		Optional<Discussion> discussion = discussionRepository.findById(id);
-		try{
-			discussion.get();
-		}catch (NoSuchElementException e) {
-			return true;
+		discussionRepository.deleteByDiscussionId(id);
+		List<Discussion> discussions =null;
+		try {
+			discussions = discussionRepository.findByDiscussionId(id);
+			if(CollectionUtils.isEmpty(discussions)){
+				return true;
+			}
+		} catch (Exception e) {
+			return false;
 		}
 		return false;
 	}

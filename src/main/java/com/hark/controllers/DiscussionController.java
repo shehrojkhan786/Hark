@@ -83,6 +83,7 @@ public class DiscussionController {
     public MessageResponse listChatRoomConnectedUsersOnSubscribe(SimpMessageHeaderAccessor headerAccessor) {
         MessageResponse response = new MessageResponse();
         String chatRoomId = headerAccessor.getSessionAttributes().get("chatRoomId").toString();
+
         Set<DiscussionUser> discussionUsers = chatRoomService.findById(chatRoomId).getUsers();
         List<User> users = null;
         if(CollectionUtils.isNotEmpty(discussionUsers)) {

@@ -5,12 +5,15 @@ package com.hark.controllers;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import com.hark.model.*;
 import com.hark.model.enums.ResponseStatus;
 import com.hark.model.payload.request.JSONRequest;
 import com.hark.repositories.*;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -19,10 +22,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.hark.model.Badge;
-import com.hark.model.Discussion;
-import com.hark.model.User;
-import com.hark.model.UserRating;
 import com.hark.model.payload.response.MessageResponse;
 import com.hark.securty.utils.JwtUtils;
 import com.hark.services.impl.SearchAndMatchService;
@@ -90,8 +89,6 @@ public class UserController {
         userRepository.save(user);
 
         if (isOpponentFound) {
-            room.setUser(user);
-            discussionRepository.save(room);
             response.setData(room);
             response.setMessage("Opponents Found");
             response.setStatus(ResponseStatus.SUCCESS.name());
@@ -143,19 +140,30 @@ public class UserController {
                                         @RequestParam("discussionId") String discussionId) {
         User user = null;
         Discussion discussion = null;
+        MessageResponse response = new MessageResponse();
         try {
             user = userRepository.findByEmail(toUserEmail).get();
         } catch (NoSuchElementException ex) {
-            // log here
-            return ResponseEntity.badRequest().body(new MessageResponse("Invalid username provided: " + toUserEmail));
+            response.setStatus(ResponseStatus.ERROR.name());
+            response.setMessage("Invalid username provided: " + toUserEmail);
+            return ResponseEntity.ok(response);
         }
 
         try {
-            discussion = discussionRepository.findById(discussionId).get();
+            List<Discussion> discussions = discussionRepository.findByDiscussionId(discussionId);
+            if(CollectionUtils.isNotEmpty(discussions)) {
+                User finalUser = user;
+                discussions
+                        .stream()
+                        .filter(discussion1 -> finalUser.getId().equals(discussion1.getUser().getId()))
+                        .collect(Collectors.toList());
+                discussion = discussions.get(0);
+            }
         } catch (NoSuchElementException ex) {
             // log here
-            return ResponseEntity.badRequest()
-                    .body(new MessageResponse("Invalid chat/discusion id provided: " + discussionId));
+            response.setStatus(ResponseStatus.ERROR.name());
+            response.setMessage("Invalid chat/discussion id provided: " + discussionId);
+            return ResponseEntity.ok(response);
         }
 
         UserRating userRating = new UserRating();
@@ -170,9 +178,13 @@ public class UserController {
         Example<UserRating> userRatingExample = Example.of(userRating, userRatingMatcher);
         boolean isSaved = ratingRepository.exists(userRatingExample);
         if (isSaved) {
-            return ResponseEntity.ok(new MessageResponse("User rating saved!!!"));
+            response.setStatus(ResponseStatus.SUCCESS.name());
+            response.setMessage("User rating saved!!!");
+        }else {
+            response.setStatus(ResponseStatus.FAILED.name());
+            response.setMessage("Unable to save ratings please, try again!!!");
         }
-        return ResponseEntity.badRequest().body(new MessageResponse("Unable to save ratings please, try again!!!"));
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/checkForProfileCompletion")

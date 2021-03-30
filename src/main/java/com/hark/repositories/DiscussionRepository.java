@@ -7,8 +7,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface DiscussionRepository extends JpaRepository<Discussion, String> {
+public interface DiscussionRepository extends JpaRepository<Discussion, Long> {
 
     //public List<Discussion> findByUsername(String username);
-
+    List<Discussion> findByDiscussionId(String discussionId);
+    void deleteByDiscussionId(String discussionId);
 }

@@ -11,6 +11,7 @@ import com.hark.repositories.DiscussionRepository;
 import com.hark.repositories.DiscussionUserRepository;
 import com.hark.repositories.OpponentRepository;
 import com.hark.repositories.UserRepository;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * @author shkhan
@@ -50,24 +52,31 @@ public class SearchAndMatchService {
 	}
 
 	public Discussion createDiscussionRoom(Long opponentId1, Long opponentId2) {
-		Discussion discussRoom = new Discussion();
+		Discussion discussionRoom = new Discussion();
 		Opponent opponent = this.findWorthyOpponent(opponentId1, opponentId2);
 		if (null == opponent) {
-			System.out.println("Before saving discussRoom In DB: "+discussRoom.toString());
-			discussRoom = discussionRepository.save(discussRoom);
-			System.out.println("After saving discussRoom In DB: "+discussRoom.toString());
-			this.saveDiscussionUser(opponentId1, opponentId2, discussRoom);
-			opponent = new Opponent(opponentId1, opponentId2, discussRoom.getId());
+			System.out.println("Before saving discussRoom In DB: "+discussionRoom.toString());
+			discussionRoom = discussionRepository.save(discussionRoom);
+			System.out.println("After saving discussRoom In DB: "+discussionRoom.toString());
+			this.saveDiscussionUser(opponentId1, opponentId2, discussionRoom);
+			opponent = new Opponent(opponentId1, opponentId2, discussionRoom.getDiscussionId());
 			opponentRepository.save(opponent);
 		} else {
 			try {
-				discussRoom = discussionRepository.findById(opponent.getDiscussionRoomId()).get();
-			} catch (NoSuchElementException ex) {
-				discussRoom = discussionRepository.save(discussRoom);
-				this.saveDiscussionUser(opponentId1, opponentId2, discussRoom);
+				List<Discussion> discussions = null;
+				discussions = discussionRepository.findByDiscussionId(opponent.getDiscussionRoomId());
+				if(CollectionUtils.isNotEmpty(discussions)){
+					discussionRoom = discussions
+							.stream()
+							.filter(discussion1 -> opponentId1.equals(discussion1.getUser().getId()))
+							.collect(Collectors.toList()).get(0);
+				}
+			} catch (Exception ex) {
+				discussionRoom = discussionRepository.save(discussionRoom);
+				this.saveDiscussionUser(opponentId1, opponentId2, discussionRoom);
 			}
 		}
-		return discussRoom;
+		return discussionRoom;
 	}
 
 	private void saveDiscussionUser(Long opponentId1, Long opponentId2, Discussion discussRoom) {
@@ -102,12 +111,15 @@ public class SearchAndMatchService {
 	}
 
 	public boolean deleteDiscussionRoom(String id) {
-		discussionRepository.deleteById(id);
-		Optional<Discussion> discussion = discussionRepository.findById(id);
+		discussionRepository.deleteByDiscussionId(id);
+		List<Discussion> discussions =null;
 		try {
-			discussion.get();
-		} catch (NoSuchElementException e) {
-			return true;
+			discussions = discussionRepository.findByDiscussionId(id);
+			if(CollectionUtils.isEmpty(discussions)){
+				return true;
+			}
+		} catch (Exception e) {
+			return false;
 		}
 		return false;
 	}
@@ -116,7 +128,14 @@ public class SearchAndMatchService {
 		Discussion discussionRoom=null;
 		Opponent opponent = opponentRepository.findByOpponentId1OrOpponentId2(userId, userId).orElse(new Opponent());
 		if(null != opponent.getId()){
-			discussionRoom = discussionRepository.findById(opponent.getDiscussionRoomId()).get();
+			List<Discussion> discussions = null;
+			discussions = discussionRepository.findByDiscussionId(opponent.getDiscussionRoomId());
+			if(CollectionUtils.isNotEmpty(discussions)){
+				discussionRoom = discussions
+										.stream()
+										.filter(discussion1 -> userId.equals(discussion1.getUser().getId()))
+										.collect(Collectors.toList()).get(0);
+			}
 		}
 		return  discussionRoom;
 	}
