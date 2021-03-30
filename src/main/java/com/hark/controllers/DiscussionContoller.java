@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -85,17 +86,22 @@ public class DiscussionContoller {
     @ResponseBody
     public ResponseEntity<?> getConnectedUsersForUser(@RequestParam("username") String username) {
         MessageResponse response = new MessageResponse();
-        List<Discussion> userDiscussions = null;
+        List<DiscussionUser> userDiscussions = null;
         try {
             userDiscussions = discussionUserRepository.findByUsername(username);
-            response.setStatus(com.hark.model.enums.ResponseStatus.SUCCESS.name());
-            response.setMessage("Users found");
-            response.setData(userDiscussions);
+            if(CollectionUtils.isNotEmpty(userDiscussions)) {
+                response.setStatus(com.hark.model.enums.ResponseStatus.SUCCESS.name());
+                response.setMessage("Connected Users found");
+                response.setData(userDiscussions);
+            }else{
+                response.setStatus(com.hark.model.enums.ResponseStatus.FAILED.name());
+                response.setMessage("Connected Users not found");
+            }
         } catch (Exception exception) {
             response.setStatus(com.hark.model.enums.ResponseStatus.ERROR.name());
-            response.setMessage("No discussions found for user: " + username);
+            response.setMessage("No Connected found for user: " + username);
         }
-        return ResponseEntity.ok(userDiscussions);
+        return ResponseEntity.ok(response);
     }
 
     @SubscribeMapping("/old.messages")
