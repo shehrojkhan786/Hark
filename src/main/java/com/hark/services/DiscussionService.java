@@ -10,7 +10,7 @@ public interface DiscussionService {
 	
 	Discussion save(Discussion discussion);
 	Discussion findById(String discussionId);
-	List<Discussion> findByUsername(String username);
+	//List<Discussion> findByUsername(String username);
 	Discussion join(DiscussionUser joiningUser, Discussion discussion);
 	Discussion leave(DiscussionUser leavingUser, Discussion discussion);
 	void sendPublicMessage(InstantMessage instantMessage);
