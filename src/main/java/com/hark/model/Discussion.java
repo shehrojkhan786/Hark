@@ -8,6 +8,7 @@ import java.util.Set;
 
 import javax.persistence.*;
 
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.redis.core.RedisHash;
 
 import lombok.AllArgsConstructor;
@@ -27,7 +28,8 @@ import lombok.NoArgsConstructor;
 public class Discussion {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(generator = "uuid")
+	@GenericGenerator(name = "uuid", strategy = "uuid2")
 	@Column(name="id")
 	private String id;
 
