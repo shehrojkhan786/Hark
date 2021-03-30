@@ -88,7 +88,10 @@ public class UserController {
         }
         user.setSearching(false);
         userRepository.save(user);
+
         if (isOpponentFound) {
+            user.getChatRooms().add(room);
+            userRepository.save(user);
             response.setData(room);
             response.setMessage("Opponents Found");
             response.setStatus(ResponseStatus.SUCCESS.name());

@@ -54,7 +54,9 @@ public class SearchAndMatchService {
 		Opponent opponent = this.findWorthyOpponent(opponentId1, opponentId2);
 		if (null == opponent) {
 			this.saveDiscussionUser(opponentId1, opponentId2, discussRoom);
+			System.out.println("Before saving discussRoom In DB: "+discussRoom.toString());
 			discussRoom = discussionRepository.save(discussRoom);
+			System.out.println("After saving discussRoom In DB: "+discussRoom.toString());
 			opponent = new Opponent(opponentId1, opponentId2, discussRoom.getId());
 			opponentRepository.save(opponent);
 		} else {

@@ -3,46 +3,49 @@
  */
 package com.hark.controllers;
 
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-
+import com.hark.model.DiscussionFeedback;
+import com.hark.model.DiscussionUser;
+import com.hark.model.InstantMessage;
+import com.hark.model.User;
+import com.hark.model.enums.MessageType;
+import com.hark.model.enums.ResponseStatus;
+import com.hark.model.payload.response.MessageResponse;
+import com.hark.repositories.DiscussionFeedbackRepository;
+import com.hark.repositories.DiscussionRepository;
+import com.hark.repositories.DiscussionUserRepository;
+import com.hark.repositories.UserRepository;
+import com.hark.services.DiscussionService;
+import com.hark.services.InstantMessageService;
+import com.hark.services.impl.fcm.PushNotificationService;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.hark.model.Discussion;
-import com.hark.model.DiscussionFeedback;
-import com.hark.model.DiscussionUser;
-import com.hark.model.InstantMessage;
-import com.hark.model.User;
-import com.hark.model.enums.MessageType;
-import com.hark.model.payload.response.MessageResponse;
-import com.hark.repositories.DiscussionFeedbackRepository;
-import com.hark.repositories.DiscussionUserRepository;
-import com.hark.repositories.UserRepository;
-import com.hark.services.DiscussionService;
-import com.hark.services.InstantMessageService;
-import com.hark.services.impl.fcm.PushNotificationService;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author shkhan
  *
  */
 @Controller
-public class DiscussionContoller {
+public class DiscussionController {
 
     @Autowired
     private DiscussionService chatRoomService;
@@ -62,44 +65,64 @@ public class DiscussionContoller {
     @Autowired
     private UserRepository userRepository;
 
-    @RequestMapping(path = "/chatroom", method = RequestMethod.POST)
-    @ResponseBody
-    @ResponseStatus(code = HttpStatus.CREATED)
-    public Discussion createChatRoom(@RequestBody Discussion chatRoom) {
-        return chatRoomService.save(chatRoom);
-    }
+//    @RequestMapping(path = "/chatroom", method = RequestMethod.POST)
+//    @ResponseBody
+//    @ResponseStatus(code = HttpStatus.CREATED)
+//    public Discussion createChatRoom(@RequestBody Discussion chatRoom) {
+//        return chatRoomService.save(chatRoom);
+//    }
 
-    @RequestMapping("/chatroom/{chatRoomId}")
-    public ModelAndView join(@PathVariable String chatRoomId, Principal principal) {
-        ModelAndView modelAndView = new ModelAndView("chatroom");
-        modelAndView.addObject("chatRoom", chatRoomService.findById(chatRoomId));
-        return modelAndView;
-    }
+//    @RequestMapping("/chatroom/{chatRoomId}")
+//    public ModelAndView join(@PathVariable String chatRoomId, Principal principal) {
+//        ModelAndView modelAndView = new ModelAndView("chatroom");
+//        modelAndView.addObject("chatRoom", chatRoomService.findById(chatRoomId));
+//        return modelAndView;
+//    }
 
     @SubscribeMapping("/connected.users")
-    public List<DiscussionUser> listChatRoomConnectedUsersOnSubscribe(SimpMessageHeaderAccessor headerAccessor) {
+    public MessageResponse listChatRoomConnectedUsersOnSubscribe(SimpMessageHeaderAccessor headerAccessor) {
+        MessageResponse response = new MessageResponse();
         String chatRoomId = headerAccessor.getSessionAttributes().get("chatRoomId").toString();
-        return new ArrayList<DiscussionUser>(chatRoomService.findById(chatRoomId).getUsers());
+        Set<DiscussionUser> discussionUsers = chatRoomService.findById(chatRoomId).getUsers();
+        List<User> users = null;
+        if(CollectionUtils.isNotEmpty(discussionUsers)) {
+            users = new ArrayList<>(discussionUsers.size());
+            for (DiscussionUser discussionUser : discussionUsers) {
+                User user = userRepository.findByUsername(discussionUser.getUsername()).get();
+                users.add(user);
+            }
+            response.setStatus(ResponseStatus.SUCCESS.name());
+            response.setMessage("Users Found");
+            response.setData(users);
+        }else{
+            response.setStatus(ResponseStatus.FAILED.name());
+            response.setMessage("No users Found");
+        }
+        return response;
     }
 
     @GetMapping("/api/discussionRoom/connectedUsers")
     @ResponseBody
-    public ResponseEntity<?> getConnectedUsersForUser(@RequestParam("username") String username) {
+    public ResponseEntity<?> getConnectedUsersForUser(@RequestParam("id") Long id) {
         MessageResponse response = new MessageResponse();
-        List<Discussion> userDiscussions = null;
         try {
-            userDiscussions = chatRoomService.findByUsername(username);
-            if(CollectionUtils.isNotEmpty(userDiscussions)) {
+            User user = userRepository.findById(id).get();
+            if(null != user && CollectionUtils.isNotEmpty(user.getChatRooms())) {
                 response.setStatus(com.hark.model.enums.ResponseStatus.SUCCESS.name());
                 response.setMessage("Connected Users found");
-                response.setData(userDiscussions);
-            }else{
+                user.getChatRooms().forEach(discussion ->
+                            discussion.getUsers()
+                                    .stream()
+                                    .filter(discussionUser -> discussionUser.getUsername().equals(user.getUsername()))
+                                    .collect(Collectors.toList()));
+                response.setData(user);
+            } else {
                 response.setStatus(com.hark.model.enums.ResponseStatus.FAILED.name());
-                response.setMessage("Connected Users not found");
+                response.setMessage("Connected Users not found for user id: "+id);
             }
-        } catch (Exception exception) {
+        } catch (NoSuchElementException noSuchElementException){
             response.setStatus(com.hark.model.enums.ResponseStatus.ERROR.name());
-            response.setMessage("No Connected found for user: " + username);
+            response.setMessage("Error while getting  connected users for user id: " + id);
         }
         return ResponseEntity.ok(response);
     }
