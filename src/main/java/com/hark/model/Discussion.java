@@ -28,7 +28,7 @@ public class Discussion implements Serializable {
 	@Column(name="id")
 	private Long id;
 
-	@Column(name="discussion_id",unique = false)
+	@Column(name="discussion_id")
 	private String discussionId;
 
 	@ManyToOne
@@ -39,7 +39,7 @@ public class Discussion implements Serializable {
 	private UserRating userRating;
 	
 	@OneToMany(fetch=FetchType.LAZY,cascade = CascadeType.ALL)
-	@JoinColumn(name="discussion_id",referencedColumnName="discussion_id")
+	@JoinColumn(name="discussion_id")
 	private Set<DiscussionUser> users =  new HashSet<>(0);
 
 	private boolean isActive=true;
