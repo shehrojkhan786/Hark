@@ -35,9 +35,6 @@ public class Discussion implements Serializable {
 	@JoinColumn(name="user_id")
 	private User user;
 
-	@OneToOne(mappedBy ="chatRoom",cascade = CascadeType.ALL,fetch=FetchType.EAGER)
-	private UserRating userRating;
-	
 	@OneToMany(fetch=FetchType.LAZY,cascade = CascadeType.ALL)
 	@JoinColumn(name="discussion_id")
 	private Set<DiscussionUser> users =  new HashSet<>(0);
