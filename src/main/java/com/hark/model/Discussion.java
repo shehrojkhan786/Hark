@@ -30,6 +30,7 @@ public class Discussion {
 
 	@GeneratedValue(generator = "uuid")
 	@GenericGenerator(name = "uuid", strategy = "uuid2")
+	@Column(name="discussion_id")
 	private String discussionId;
 
 	@ManyToOne
