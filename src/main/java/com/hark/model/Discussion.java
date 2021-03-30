@@ -3,17 +3,14 @@
  */
 package com.hark.model;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.persistence.*;
-
-import org.hibernate.annotations.GenericGenerator;
-import org.springframework.data.redis.core.RedisHash;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author shkhan
@@ -34,7 +31,7 @@ public class Discussion {
 	private String id;
 
 	@ManyToOne
-	@JoinColumn(name="user_id", nullable=false)
+	@JoinColumn(name="user_id")
 	private User user;
 	
 	@OneToOne(mappedBy ="chatRoom",cascade = CascadeType.ALL,fetch=FetchType.EAGER)
