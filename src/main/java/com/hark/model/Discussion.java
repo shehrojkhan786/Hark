@@ -5,10 +5,10 @@ package com.hark.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -21,7 +21,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "discussions")
 //@RedisHash("chatrooms")
-public class Discussion {
+public class Discussion implements Serializable {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)

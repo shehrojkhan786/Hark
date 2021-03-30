@@ -19,6 +19,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 /**
  * @author shkhan
  *
@@ -28,7 +30,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "user_ratings")
-public class UserRating {
+public class UserRating implements Serializable {
 	
 	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)

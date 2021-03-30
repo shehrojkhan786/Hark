@@ -1,5 +1,6 @@
 package com.hark.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import lombok.ToString;
@@ -20,7 +21,7 @@ import lombok.Data;
 @AllArgsConstructor
 @Data
 @ToString
-public class InstantMessage {
+public class InstantMessage implements Serializable {
 	
 	@JsonIgnore
 	@PrimaryKeyColumn(name = "username", ordinal = 0, type = PrimaryKeyType.PARTITIONED)

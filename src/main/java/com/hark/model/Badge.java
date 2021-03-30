@@ -3,6 +3,7 @@
  */
 package com.hark.model;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,7 +29,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "badges")
-public class Badge {
+public class Badge implements Serializable {
 	
 	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -18,6 +18,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 /**
  * @author shkhan
  *
@@ -28,7 +30,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Table(name="discussion_users")
 @Entity
-public class DiscussionUser {
+public class DiscussionUser implements Serializable {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
