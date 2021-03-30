@@ -86,9 +86,9 @@ public class DiscussionContoller {
     @ResponseBody
     public ResponseEntity<?> getConnectedUsersForUser(@RequestParam("username") String username) {
         MessageResponse response = new MessageResponse();
-        List<DiscussionUser> userDiscussions = null;
+        List<Discussion> userDiscussions = null;
         try {
-            userDiscussions = discussionUserRepository.findByUsername(username);
+            userDiscussions = chatRoomService.findByUsername(username);
             if(CollectionUtils.isNotEmpty(userDiscussions)) {
                 response.setStatus(com.hark.model.enums.ResponseStatus.SUCCESS.name());
                 response.setMessage("Connected Users found");
