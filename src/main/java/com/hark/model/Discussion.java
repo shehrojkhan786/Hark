@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "discussions")
-@RedisHash("chatrooms")
+//@RedisHash("chatrooms")
 public class Discussion {
 	
 	@Id
