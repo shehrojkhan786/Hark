@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface DiscussionRepository extends JpaRepository<Discussion, String> {
 
-    public List<Discussion> findByUsername(String username);
+    //public List<Discussion> findByUsername(String username);
 
 }
