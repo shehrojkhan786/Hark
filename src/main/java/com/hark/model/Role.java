@@ -4,6 +4,7 @@
 package com.hark.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.hark.model.enums.ERole;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,7 +31,7 @@ public class Role implements Serializable {
 	
 	@Enumerated(EnumType.STRING)
 	@Column(length = 20)
-	@JsonIgnore
+	@JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
 	private ERole name;
 	
 }
