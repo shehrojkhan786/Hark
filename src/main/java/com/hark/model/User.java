@@ -106,6 +106,11 @@ public class User implements Serializable {
 	@JoinColumn(name = "role_id")	
 	private Role role;
 
-	@ManyToMany(mappedBy="users", cascade = CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinTable(
+			name = "user_discussions",
+			joinColumns = { @JoinColumn(name = "user_id") },
+			inverseJoinColumns = { @JoinColumn(name = "discussion_id") }
+	)
 	private Set<Discussion> discussions = new HashSet<>(0);
 }
