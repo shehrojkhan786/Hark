@@ -76,7 +76,7 @@ public class UserController {
                 } else {
                     searchCounter++;
                     try {
-                        Thread.sleep(5000);
+                        Thread.sleep(100);
                     } catch (InterruptedException exception) {
                         System.out.println("Error while searching for user.");
                     }
