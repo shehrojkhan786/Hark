@@ -17,6 +17,7 @@ import javax.validation.constraints.NotEmpty;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
@@ -29,6 +30,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Data
 @Entity
+@EqualsAndHashCode
 @Table(name = "discussion_feedback")
 public class DiscussionFeedback implements Serializable {
 	

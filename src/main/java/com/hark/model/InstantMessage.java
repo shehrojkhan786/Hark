@@ -3,6 +3,7 @@ package com.hark.model;
 import java.io.Serializable;
 import java.util.Date;
 
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.springframework.data.cassandra.core.cql.Ordering;
 import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
@@ -21,6 +22,7 @@ import lombok.Data;
 @AllArgsConstructor
 @Data
 @ToString
+@EqualsAndHashCode
 public class InstantMessage implements Serializable {
 	
 	@JsonIgnore

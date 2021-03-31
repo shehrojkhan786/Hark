@@ -17,6 +17,7 @@ import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
@@ -29,6 +30,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Data
 @Entity
+@EqualsAndHashCode
 @Table(name = "user_ratings")
 public class UserRating implements Serializable {
 	
@@ -38,7 +40,7 @@ public class UserRating implements Serializable {
 	private Long id;
 	
 	private float stars;
-	
+
 	@OneToOne(fetch=FetchType.LAZY,cascade = CascadeType.ALL)
 	@JoinColumn(name = "discussion_id",nullable=false)
 	private Discussion chatRoom;

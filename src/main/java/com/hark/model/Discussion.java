@@ -5,6 +5,7 @@ package com.hark.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -19,6 +20,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Data
 @Entity
+@EqualsAndHashCode
 @Table(name = "discussions")
 //@RedisHash("chatrooms")
 public class Discussion implements Serializable {
