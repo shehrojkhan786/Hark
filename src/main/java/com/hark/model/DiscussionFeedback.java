@@ -42,7 +42,7 @@ public class DiscussionFeedback implements Serializable {
 	@NotEmpty
 	private String comment;
 	
-	@OneToOne(cascade = CascadeType.ALL,fetch=FetchType.LAZY)
+	@OneToOne(cascade = CascadeType.ALL,fetch=FetchType.EAGER)
 	@JoinColumn(name = "discussion_user_id")
 	private DiscussionUser discussionUser;
 }

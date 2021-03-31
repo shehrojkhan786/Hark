@@ -41,7 +41,7 @@ public class UserRating implements Serializable {
 	
 	private float stars;
 
-	@OneToOne(fetch=FetchType.LAZY,cascade = CascadeType.ALL)
+	@OneToOne(fetch=FetchType.EAGER,cascade = CascadeType.ALL)
 	@JoinColumn(name = "discussion_id",nullable=false)
 	private Discussion chatRoom;
 	

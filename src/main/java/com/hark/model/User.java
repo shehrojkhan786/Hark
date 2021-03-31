@@ -93,7 +93,7 @@ public class User implements Serializable {
 		this.deviceId = deviceId;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY,cascade = CascadeType.ALL,mappedBy="user")
+	@OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL,mappedBy="user")
 	private Set<UserRating> ratings = new HashSet<>(0);
 	
 	@ManyToMany(cascade=CascadeType.ALL)
@@ -104,11 +104,11 @@ public class User implements Serializable {
 	    )	
 	private Set<Badge> badges = new HashSet<>(0);
 
-	@ManyToOne(cascade = CascadeType.ALL,fetch=FetchType.LAZY)
+	@ManyToOne(cascade = CascadeType.ALL,fetch=FetchType.EAGER)
 	@JoinColumn(name = "role_id")	
 	private Role role;
 
-	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(
 			name = "user_discussions",
 			joinColumns = { @JoinColumn(name = "user_id") },
