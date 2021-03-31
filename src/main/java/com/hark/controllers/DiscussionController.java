@@ -91,8 +91,21 @@ public class DiscussionController {
         }
         if(CollectionUtils.isNotEmpty(discussionUsers)) {
             List<User> users = new ArrayList<>(discussionUsers.size());
+            discussionUsers = discussionUsers
+                    .stream()
+                    .filter(discussionUser -> !discussionUser.getUsername().equals(headerAccessor.getUser().getName()))
+                    .collect(Collectors.toSet());
+            ;
             for (DiscussionUser discussionUser : discussionUsers) {
                 User user = userRepository.findByUsername(discussionUser.getUsername()).get();
+                user.setDiscussions(null);
+                user.setBadges(null);
+                user.setRatings(null);
+                user.setDeviceId(null);
+                user.setPhone(null);
+                user.setCountry(null);
+                user.setPoliticalParty(null);
+                user.setEmail(null);
                 users.add(user);
             }
             response.setStatus(ResponseStatus.SUCCESS.name());
