@@ -58,6 +58,8 @@ public class SearchAndMatchService {
 		User secondUser = userRepository.findById(opponentId2).get();
 		if (null == opponent) {
 			System.out.println("Before saving discussRoom In DB: "+discussionRoom.toString());
+			discussionRoom.getUsers().add(firstUser);
+			discussionRoom.getUsers().add(secondUser);
 			discussionRoom = discussionRepository.save(discussionRoom);
 			System.out.println("After saving discussRoom In DB: "+discussionRoom.toString());
 			this.saveDiscussionUser(firstUser, secondUser, discussionRoom);
@@ -67,6 +69,8 @@ public class SearchAndMatchService {
 			try {
 				discussionRoom = discussionRepository.findByDiscussionId(opponent.getDiscussionRoomId()).get();
 			} catch (Exception ex) {
+				discussionRoom.getUsers().add(firstUser);
+				discussionRoom.getUsers().add(secondUser);
 				discussionRoom = discussionRepository.save(discussionRoom);
 				this.saveDiscussionUser(firstUser, secondUser, discussionRoom);
 			}
