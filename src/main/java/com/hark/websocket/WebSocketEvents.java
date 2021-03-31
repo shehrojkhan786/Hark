@@ -21,6 +21,7 @@ public class WebSocketEvents {
 		System.out.println("I am trying to join the session");
 		SimpMessageHeaderAccessor headers = SimpMessageHeaderAccessor.wrap(event.getMessage());
 		String chatRoomId = String.valueOf(headers.getNativeHeader("login").get(0));
+		System.out.println("Discussion Id: "+chatRoomId);
 		headers.getSessionAttributes().put("chatRoomId", chatRoomId);
 		DiscussionUser joiningUser = new DiscussionUser(event.getUser().getName());
 		chatRoomService.join(joiningUser, chatRoomService.findById(chatRoomId));

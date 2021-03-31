@@ -9,7 +9,6 @@ import com.hark.services.DiscussionService;
 import com.hark.services.InstantMessageService;
 import com.hark.utils.Destinations;
 import com.hark.utils.SystemMessages;
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -51,8 +50,8 @@ public class RedisDiscussionRoomService implements DiscussionService {
 
 	@Override
 	public Discussion join(DiscussionUser joiningUser, Discussion chatRoom) {
-		chatRoom.addUser(joiningUser);
-		discussionRepository.save(chatRoom);
+		//chatRoom.addUser(joiningUser);
+		//discussionRepository.save(chatRoom);
 
 		sendPublicMessage(SystemMessages.welcome(chatRoom.getDiscussionId(), joiningUser.getUsername()));
 		updateConnectedUsersViaWebSocket(chatRoom);
@@ -61,8 +60,20 @@ public class RedisDiscussionRoomService implements DiscussionService {
 	}
 
 	private void verifyAndDeleteOpponents(Discussion discussionRoom) {
+		System.out.println("Going to delete from opponents for discussion Id: "+discussionRoom.getDiscussionId());
 		if(MAX_OPPONENT_ALLOWED <= discussionRoom.getDiscussionUsers().size()) {
 			opponentRepository.deleteByDiscussionRoomId(discussionRoom.getDiscussionId());
+			System.out.println("deleted from opponents for discussion Id: "+discussionRoom.getDiscussionId());
+			System.out.println("Verifying deletion from opponents for discussion Id: "+discussionRoom.getDiscussionId());
+			try{
+				opponentRepository.findByDiscussionRoomId(discussionRoom.getDiscussionId()).get();
+			}catch (NoSuchElementException exception){
+				System.out.println("successfully deleted from opponents for discussion Id: "+discussionRoom.getDiscussionId());
+				return;
+			}
+			System.out.println("unable to delete from opponents for discussion Id: "+discussionRoom.getDiscussionId());
+		}else{
+			System.out.println("Room for more opponents for discussion Id: "+discussionRoom.getDiscussionId());
 		}
 	}
 
@@ -70,8 +81,8 @@ public class RedisDiscussionRoomService implements DiscussionService {
 	public Discussion leave(DiscussionUser leavingUser, Discussion chatRoom) {
 		sendPublicMessage(SystemMessages.goodbye(chatRoom.getDiscussionId(), leavingUser.getUsername()));
 		
-		chatRoom.removeUser(leavingUser);
-		discussionRepository.save(chatRoom);
+		//chatRoom.removeUser(leavingUser);
+		//discussionRepository.save(chatRoom);
 		
 		updateConnectedUsersViaWebSocket(chatRoom);
 		return chatRoom;

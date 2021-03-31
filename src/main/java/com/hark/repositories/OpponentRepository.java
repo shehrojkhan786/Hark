@@ -18,5 +18,6 @@ import com.hark.model.Opponent;
 public interface OpponentRepository extends JpaRepository<Opponent, Long> {	
 	Optional<Opponent> findByOpponentId1AndOpponentId2(Long opponentId1,Long opponentId2);
 	void deleteByDiscussionRoomId(String discussionRoomId);
+	Optional<Opponent> findByDiscussionRoomId(String discussionRoomId);
 	Optional<Opponent> findByOpponentId1OrOpponentId2(Long opponentId1,Long opponentId2);
 }
