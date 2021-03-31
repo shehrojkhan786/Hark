@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.redis.core.RedisHash;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -22,7 +23,7 @@ import java.util.UUID;
 @Entity
 @EqualsAndHashCode
 @Table(name = "discussions")
-//@RedisHash("chatrooms")
+@RedisHash("chatrooms")
 public class Discussion implements Serializable {
 	
 	@Id
