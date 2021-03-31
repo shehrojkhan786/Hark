@@ -6,9 +6,6 @@ package com.hark.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.hibernate.annotations.GenericGenerator;
-import org.springframework.data.redis.core.RedisHash;
-import org.springframework.data.redis.core.index.Indexed;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -24,7 +21,7 @@ import java.util.UUID;
 @Entity
 @EqualsAndHashCode
 @Table(name = "discussions")
-@RedisHash("chatrooms")
+//@RedisHash("chatrooms")
 public class Discussion implements Serializable {
 	
 	@Id
@@ -33,7 +30,6 @@ public class Discussion implements Serializable {
 	private Long id;
 
 	@Column(name="discussion_id")
-	@Indexed
 	private String discussionId;
 
 	@OneToMany(fetch=FetchType.LAZY,cascade = CascadeType.ALL)
