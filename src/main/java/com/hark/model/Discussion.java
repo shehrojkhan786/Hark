@@ -32,7 +32,7 @@ public class Discussion implements Serializable {
 	@Column(name="discussion_id")
 	private String discussionId;
 
-	@OneToMany(fetch=FetchType.LAZY,cascade = CascadeType.ALL)
+	@OneToMany(fetch=FetchType.EAGER,cascade = CascadeType.ALL)
 	@JoinColumn(name="discussion_id")
 	private Set<DiscussionUser> discussionUsers =  new HashSet<>(0);
 
