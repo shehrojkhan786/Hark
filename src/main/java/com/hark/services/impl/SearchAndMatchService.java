@@ -118,9 +118,10 @@ public class SearchAndMatchService {
 		Opponent opponent = opponentRepository.findByOpponentId1OrOpponentId2(userId, userId).orElse(new Opponent());
 		if(null != opponent.getId()){
 			try {
+				System.out.println("Current opponent details are: "+opponent);
 				discussionRoom = discussionRepository.findByDiscussionId(opponent.getDiscussionRoomId()).get();
 			}catch(NoSuchElementException exception){
-				System.out.println("No Discussion Room found for this discussionId");
+				System.out.println("No Discussion Room found for this discussionId with exception: "+exception.getMessage());
 			}
 		}
 		return  discussionRoom;
