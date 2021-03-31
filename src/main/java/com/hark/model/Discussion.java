@@ -32,8 +32,12 @@ public class Discussion implements Serializable {
 	private String discussionId;
 
 	@ManyToOne
-	@JoinColumn(name="user_id")
-	private User user;
+	@JoinColumn(name="user_id1")
+	private User firstUser;
+
+	@ManyToOne
+	@JoinColumn(name="user_id2")
+	private User secondUser;
 
 	@OneToMany(fetch=FetchType.LAZY,cascade = CascadeType.ALL)
 	@JoinColumn(name="discussion_id")

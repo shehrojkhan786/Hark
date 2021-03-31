@@ -59,29 +59,19 @@ public class SearchAndMatchService {
 		User secondUser = userRepository.findById(opponentId2).get();
 		if (null == opponent) {
 			System.out.println("Before saving discussRoom In DB: "+discussionRoom.toString());
-			discussionRoom.setUser(firstUser);
+			discussionRoom.setFirstUser(firstUser);
+			discussionRoom.setSecondUser(secondUser);
 			discussionRoom = discussionRepository.save(discussionRoom);
-			discussionRoomWithOldDiscussionId.setUser(secondUser);
-			discussionRepository.save(discussionRoomWithOldDiscussionId);
 			System.out.println("After saving discussRoom In DB: "+discussionRoom.toString());
 			this.saveDiscussionUser(firstUser, secondUser, discussionRoom);
 			opponent = new Opponent(firstUser.getId(), secondUser.getId(), discussionRoom.getDiscussionId());
 			opponentRepository.save(opponent);
 		} else {
 			try {
-				List<Discussion> discussions = null;
-				discussions = discussionRepository.findByDiscussionId(opponent.getDiscussionRoomId());
-				if(CollectionUtils.isNotEmpty(discussions)){
-					discussionRoom = discussions
-							.stream()
-							.filter(discussion1 -> opponentId1.equals(discussion1.getUser().getId()))
-							.collect(Collectors.toList()).get(0);
-				}
+				discussionRoom = discussionRepository.findByDiscussionId(opponent.getDiscussionRoomId()).get();
 			} catch (Exception ex) {
-				discussionRoom.setUser(firstUser);
-				discussionRoom = discussionRepository.save(discussionRoom);
-				discussionRoomWithOldDiscussionId.setUser(secondUser);
-				discussionRepository.save(discussionRoomWithOldDiscussionId);
+				discussionRoom.setFirstUser(firstUser);
+				discussionRoom.setSecondUser(secondUser);
 				discussionRoom = discussionRepository.save(discussionRoom);
 				this.saveDiscussionUser(firstUser, secondUser, discussionRoom);
 			}
@@ -119,29 +109,23 @@ public class SearchAndMatchService {
 
 	public boolean deleteDiscussionRoom(String id) {
 		discussionRepository.deleteByDiscussionId(id);
-		List<Discussion> discussions =null;
+		Discussion discussion =null;
 		try {
-			discussions = discussionRepository.findByDiscussionId(id);
-			if(CollectionUtils.isEmpty(discussions)){
-				return true;
-			}
-		} catch (Exception e) {
+			discussion = discussionRepository.findByDiscussionId(id).get();
 			return false;
+		} catch (Exception e) {
+			return true;
 		}
-		return false;
 	}
 
 	public Discussion checkAndGetRoomForUser(Long userId){
 		Discussion discussionRoom=null;
 		Opponent opponent = opponentRepository.findByOpponentId1OrOpponentId2(userId, userId).orElse(new Opponent());
 		if(null != opponent.getId()){
-			List<Discussion> discussions = null;
-			discussions = discussionRepository.findByDiscussionId(opponent.getDiscussionRoomId());
-			if(CollectionUtils.isNotEmpty(discussions)){
-				discussionRoom = discussions
-										.stream()
-										.filter(discussion1 -> userId.equals(discussion1.getUser().getId()))
-										.collect(Collectors.toList()).get(0);
+			try {
+				discussionRoom = discussionRepository.findByDiscussionId(opponent.getDiscussionRoomId()).get();
+			}catch(NoSuchElementException exception){
+				System.out.println("No Discussion Room found for this discussionId");
 			}
 		}
 		return  discussionRoom;

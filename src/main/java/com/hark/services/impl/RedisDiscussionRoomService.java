@@ -15,6 +15,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class RedisDiscussionRoomService implements DiscussionService {
@@ -40,9 +41,10 @@ public class RedisDiscussionRoomService implements DiscussionService {
 	@Override
 	public Discussion findById(String chatRoomId) {
 		Discussion discussionRoom = null;
-		List<Discussion> discussions = discussionRepository.findByDiscussionId(chatRoomId);
-		if(CollectionUtils.isNotEmpty(discussions)){
-			discussionRoom = discussions.get(0);
+		try {
+			discussionRoom = discussionRepository.findByDiscussionId(chatRoomId).get();
+		}catch (NoSuchElementException exception){
+			System.out.println("No discussion room found for discussion id");
 		}
 		return discussionRoom;
 	}
@@ -115,16 +117,13 @@ public class RedisDiscussionRoomService implements DiscussionService {
 	@Override
 	public boolean deleteById(String id) {
 		discussionRepository.deleteByDiscussionId(id);
-		List<Discussion> discussions =null;
+		Discussion discussion =null;
 		try {
-			discussions = discussionRepository.findByDiscussionId(id);
-			if(CollectionUtils.isEmpty(discussions)){
-				return true;
-			}
-		} catch (Exception e) {
+			discussion = discussionRepository.findByDiscussionId(id).get();
 			return false;
+		} catch (Exception e) {
+			return true;
 		}
-		return false;
 	}
 
 	/*@Override

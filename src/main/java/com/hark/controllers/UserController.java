@@ -150,15 +150,7 @@ public class UserController {
         }
 
         try {
-            List<Discussion> discussions = discussionRepository.findByDiscussionId(discussionId);
-            if(CollectionUtils.isNotEmpty(discussions)) {
-                User finalUser = user;
-                discussions
-                        .stream()
-                        .filter(discussion1 -> finalUser.getId().equals(discussion1.getUser().getId()))
-                        .collect(Collectors.toList());
-                discussion = discussions.get(0);
-            }
+            discussion = discussionRepository.findByDiscussionId(discussionId).get();
         } catch (NoSuchElementException ex) {
             // log here
             response.setStatus(ResponseStatus.ERROR.name());
