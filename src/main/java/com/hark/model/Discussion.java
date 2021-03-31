@@ -31,7 +31,12 @@ public class Discussion implements Serializable {
 	@Column(name="discussion_id")
 	private String discussionId;
 
-	@ManyToMany(mappedBy="discussions", cascade = CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinTable(
+			name = "user_discussions",
+			joinColumns = { @JoinColumn(name = "discussion_id") },
+			inverseJoinColumns = { @JoinColumn(name = "user_id") }
+	)
 	private Set<User> users = new HashSet<>(0);
 
 	@OneToMany(fetch=FetchType.LAZY,cascade = CascadeType.ALL)
