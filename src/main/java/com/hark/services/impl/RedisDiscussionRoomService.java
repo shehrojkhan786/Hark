@@ -61,7 +61,7 @@ public class RedisDiscussionRoomService implements DiscussionService {
 	}
 
 	private void verifyAndDeleteOpponents(Discussion discussionRoom) {
-		if(MAX_OPPONENT_ALLOWED <= discussionRoom.getUsers().size()) {
+		if(MAX_OPPONENT_ALLOWED <= discussionRoom.getDiscussionUsers().size()) {
 			opponentRepository.deleteByDiscussionRoomId(discussionRoom.getDiscussionId());
 		}
 	}
@@ -111,7 +111,7 @@ public class RedisDiscussionRoomService implements DiscussionService {
 	private void updateConnectedUsersViaWebSocket(Discussion chatRoom) {
 		webSocketMessagingTemplate.convertAndSend(
 				Destinations.Discussion.connectedUsers(String.valueOf(chatRoom.getId())),
-				chatRoom.getUsers());
+				chatRoom.getDiscussionUsers());
 	}
 
 	@Override
