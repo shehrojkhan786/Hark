@@ -3,10 +3,7 @@
  */
 package com.hark.controllers;
 
-import com.hark.model.DiscussionFeedback;
-import com.hark.model.DiscussionUser;
-import com.hark.model.InstantMessage;
-import com.hark.model.User;
+import com.hark.model.*;
 import com.hark.model.enums.MessageType;
 import com.hark.model.enums.ResponseStatus;
 import com.hark.model.payload.response.MessageResponse;
@@ -51,6 +48,9 @@ public class DiscussionController {
     private DiscussionService chatRoomService;
 
     @Autowired
+    private DiscussionRepository discussionRepository;
+
+    @Autowired
     private DiscussionUserRepository discussionUserRepository;
 
     @Autowired
@@ -83,11 +83,14 @@ public class DiscussionController {
     public MessageResponse listChatRoomConnectedUsersOnSubscribe(SimpMessageHeaderAccessor headerAccessor) {
         MessageResponse response = new MessageResponse();
         String chatRoomId = headerAccessor.getSessionAttributes().get("chatRoomId").toString();
-
-        Set<DiscussionUser> discussionUsers = chatRoomService.findById(chatRoomId).getDiscussionUsers();
-        List<User> users = null;
+        Set<DiscussionUser> discussionUsers = null;
+        try {
+            discussionUsers = discussionRepository.findByDiscussionId(chatRoomId).get().getDiscussionUsers();;
+        }catch(NoSuchElementException exception){
+            System.out.println("No discussion room found for discussion Id: "+chatRoomId );
+        }
         if(CollectionUtils.isNotEmpty(discussionUsers)) {
-            users = new ArrayList<>(discussionUsers.size());
+            List<User> users = new ArrayList<>(discussionUsers.size());
             for (DiscussionUser discussionUser : discussionUsers) {
                 User user = userRepository.findByUsername(discussionUser.getUsername()).get();
                 users.add(user);
