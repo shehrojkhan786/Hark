@@ -31,28 +31,23 @@ public class Discussion implements Serializable {
 	@Column(name="discussion_id")
 	private String discussionId;
 
-	@ManyToOne
-	@JoinColumn(name="user_id1")
-	private User firstUser;
-
-	@ManyToOne
-	@JoinColumn(name="user_id2")
-	private User secondUser;
+	@ManyToMany(mappedBy="discussions")
+	private Set<User> users = new HashSet<>(0);
 
 	@OneToMany(fetch=FetchType.LAZY,cascade = CascadeType.ALL)
 	@JoinColumn(name="discussion_id")
-	private Set<DiscussionUser> users =  new HashSet<>(0);
+	private Set<DiscussionUser> discussionUsers =  new HashSet<>(0);
 
 	private boolean isActive=true;
 	
 	public void addUser(DiscussionUser user) {
-		this.users.add(user);
+		this.discussionUsers.add(user);
 	}
 	public void removeUser(DiscussionUser user) {
-		this.users.remove(user);
+		this.discussionUsers.remove(user);
 	}
 	public int getNumberOfConnectedUsers(){
-		return this.users.size();
+		return this.discussionUsers.size();
 	}
 
 	public Discussion(){

@@ -84,7 +84,7 @@ public class DiscussionController {
         MessageResponse response = new MessageResponse();
         String chatRoomId = headerAccessor.getSessionAttributes().get("chatRoomId").toString();
 
-        Set<DiscussionUser> discussionUsers = chatRoomService.findById(chatRoomId).getUsers();
+        Set<DiscussionUser> discussionUsers = chatRoomService.findById(chatRoomId).getDiscussionUsers();
         List<User> users = null;
         if(CollectionUtils.isNotEmpty(discussionUsers)) {
             users = new ArrayList<>(discussionUsers.size());
@@ -108,11 +108,11 @@ public class DiscussionController {
         MessageResponse response = new MessageResponse();
         try {
             User user = userRepository.findById(id).get();
-            if(null != user && CollectionUtils.isNotEmpty(user.getChatRooms())) {
+            if(null != user && CollectionUtils.isNotEmpty(user.getDiscussions())) {
                 response.setStatus(com.hark.model.enums.ResponseStatus.SUCCESS.name());
                 response.setMessage("Connected Users found");
-                user.getChatRooms().forEach(discussion ->
-                            discussion.getUsers()
+                user.getDiscussions().forEach(discussion ->
+                            discussion.getDiscussionUsers()
                                     .stream()
                                     .filter(discussionUser -> discussionUser.getUsername().equals(user.getUsername()))
                                     .collect(Collectors.toList()));
