@@ -112,10 +112,13 @@ public class DiscussionController {
                 response.setStatus(com.hark.model.enums.ResponseStatus.SUCCESS.name());
                 response.setMessage("Connected Users found");
                 user.getDiscussions().forEach(discussion ->
-                            discussion.getDiscussionUsers()
-                                    .stream()
-                                    .filter(discussionUser -> discussionUser.getUsername().equals(user.getUsername()))
-                                    .collect(Collectors.toList()));
+                                    {
+                                        Set<DiscussionUser> discussionUsers = discussion.getDiscussionUsers()
+                                                .stream()
+                                                .filter(discussionUser -> !discussionUser.getUsername().equals(user.getUsername()))
+                                                .collect(Collectors.toSet());
+                                        discussion.setDiscussionUsers(discussionUsers);
+                                    });
                 response.setData(user);
             } else {
                 response.setStatus(com.hark.model.enums.ResponseStatus.FAILED.name());
