@@ -96,7 +96,7 @@ public class User implements Serializable {
 	@OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL,mappedBy="user")
 	private Set<UserRating> ratings = new HashSet<>(0);
 	
-	@ManyToMany(cascade=CascadeType.ALL)
+	@ManyToMany(cascade=CascadeType.ALL,fetch=FetchType.EAGER)
 	@JoinTable(
 	        name = "user_badges", 
 	        joinColumns = { @JoinColumn(name = "user_id") }, 
