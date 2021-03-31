@@ -54,7 +54,7 @@ public class RedisDiscussionRoomService implements DiscussionService {
 		chatRoom.addUser(joiningUser);
 		discussionRepository.save(chatRoom);
 
-		sendPublicMessage(SystemMessages.welcome(String.valueOf(chatRoom.getId()), joiningUser.getUsername()));
+		sendPublicMessage(SystemMessages.welcome(chatRoom.getDiscussionId(), joiningUser.getUsername()));
 		updateConnectedUsersViaWebSocket(chatRoom);
 		verifyAndDeleteOpponents(chatRoom);
 		return chatRoom;
@@ -68,7 +68,7 @@ public class RedisDiscussionRoomService implements DiscussionService {
 
 	@Override
 	public Discussion leave(DiscussionUser leavingUser, Discussion chatRoom) {
-		sendPublicMessage(SystemMessages.goodbye(String.valueOf(chatRoom.getId()), leavingUser.getUsername()));
+		sendPublicMessage(SystemMessages.goodbye(chatRoom.getDiscussionId(), leavingUser.getUsername()));
 		
 		chatRoom.removeUser(leavingUser);
 		discussionRepository.save(chatRoom);
@@ -79,7 +79,7 @@ public class RedisDiscussionRoomService implements DiscussionService {
 
 	@Override
 	public void sendPublicMessage(InstantMessage instantMessage) {
-		System.out.println("MessageType is: "+instantMessage.getChatMessageType());
+		System.out.println("MessageType is: "+instantMessage.toString());
 		webSocketMessagingTemplate.convertAndSend(
 				Destinations.Discussion.publicMessages(instantMessage.getChatRoomId()),
 				instantMessage);
@@ -110,7 +110,7 @@ public class RedisDiscussionRoomService implements DiscussionService {
 	
 	private void updateConnectedUsersViaWebSocket(Discussion chatRoom) {
 		webSocketMessagingTemplate.convertAndSend(
-				Destinations.Discussion.connectedUsers(String.valueOf(chatRoom.getId())),
+				Destinations.Discussion.connectedUsers(chatRoom.getDiscussionId()),
 				chatRoom.getDiscussionUsers());
 	}
 
