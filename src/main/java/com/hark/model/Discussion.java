@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -32,6 +33,7 @@ public class Discussion implements Serializable {
 	private Long id;
 
 	@Column(name="discussion_id")
+	@Indexed
 	private String discussionId;
 
 	@OneToMany(fetch=FetchType.LAZY,cascade = CascadeType.ALL)
