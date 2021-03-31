@@ -15,6 +15,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -119,7 +120,9 @@ public class SearchAndMatchService {
 		if(null != opponent.getId()){
 			try {
 				System.out.println("Current opponent details are: "+opponent);
-				discussionRoom = discussionRepository.findByDiscussionId(opponent.getDiscussionRoomId()).get();
+				Optional<Discussion> discussion = discussionRepository.findByDiscussionId(opponent.getDiscussionRoomId());
+				System.out.println("Current discussion Details are: "+discussion.toString());
+				discussionRoom = discussion.get();
 			}catch(NoSuchElementException exception){
 				System.out.println("No Discussion Room found for this discussionId with exception: "+exception.getMessage());
 			}
