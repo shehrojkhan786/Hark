@@ -36,7 +36,7 @@ import java.util.Optional;
 @RequestMapping("/api/media")
 public class MediaController {
 
-	private final String fileBasePath = "D:/files/media/";
+	private final String fileBasePath = "/home/ubuntu/hark/files/media/";
 
 	@PostMapping(value ="/upload/discussions", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},produces = {MediaType.APPLICATION_JSON_VALUE})
 	public ResponseEntity<MessageResponse> uploadData(@RequestParam("file") MultipartFile file, HttpServletRequest request) throws Exception {
