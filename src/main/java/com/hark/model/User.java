@@ -66,6 +66,8 @@ public class User implements Serializable {
 	private String name;
 
 	@Email
+	@NotEmpty
+	@Column(unique = true)
 	private String email;
 
 	private Long phone;
@@ -75,12 +77,19 @@ public class User implements Serializable {
 	private String country;
 	
 	private String deviceId;
+
+	@Column(name="user_rating")
+	private float stars = 0.0f;
 	
 	private boolean isProfileCompleted = false;
 
 	private boolean isActive = true;
 	
 	private boolean isSearching = false;
+
+	@Column(name = "verification_code", length = 64)
+	private String verificationCode;
+	private boolean enabled;
 
 	public User(String username, String email, String password,Long phone,String politicalParty,String country,String name,String deviceId) {
 		this.username = username;
@@ -93,7 +102,7 @@ public class User implements Serializable {
 		this.deviceId = deviceId;
 	}
 
-	@OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL,mappedBy="user")
+	@OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL,mappedBy="toUser")
 	private Set<UserRating> ratings = new HashSet<>(0);
 	
 	@ManyToMany(cascade=CascadeType.ALL,fetch=FetchType.EAGER)

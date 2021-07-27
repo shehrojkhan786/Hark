@@ -5,6 +5,17 @@ spring:
   main:
     allow-bean-definition-overriding: true
   profiles: dev
+  mail:
+    host : smtp.mailtrap.io
+    port: 587
+    username : 7287e424d9846c
+    password : 23269a63383753
+    properties :
+      mail:
+        smtp:
+          auth : true
+          starttls:
+            enable : true
   datasource:
     url: jdbc:mysql://192.168.32.129:3306/hark
     username: root
@@ -38,9 +49,13 @@ spring:
       contact-points: 192.168.32.129
       port: 9042
       keyspace-name: hark
-      entity-base-package : "com.hark.model"  servlet:    multipart:
-      enabled: true      max-file-size: 1MB
-      max-request-size: 1MB                
+      entity-base-package : "com.hark.model"
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 1MB
+      max-request-size: 1MB        
+        
 flyway.enabled: true      
 security.headers.cache: false 
 server.session.timeout: 600
@@ -88,7 +103,9 @@ spring:
       repositories:
         enabled: true
     cassandra:
-      datacenter: datacenter1      contact-points:      - "192.168.32.129"
+      datacenter: datacenter1
+      contact-points:
+      - "192.168.32.129"
 
 flyway.enabled: true
 

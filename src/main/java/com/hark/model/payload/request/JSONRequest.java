@@ -20,4 +20,5 @@ public class JSONRequest {
     private String politicalParty;
     private String feedback;
     private String userId;
+    private String fromUser;
 }

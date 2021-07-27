@@ -38,15 +38,20 @@ public class UserRating implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name="id")
 	private Long id;
-	
-	private float stars;
+
+	@Column(name="user_rating")
+	private float stars=0.0f;
 
 	@OneToOne(fetch=FetchType.EAGER,cascade = CascadeType.ALL)
 	@JoinColumn(name = "discussion_id",nullable=false)
 	private Discussion chatRoom;
 	
 	@ManyToOne
-    @JoinColumn(name="user_id", nullable=false)
-	private User user;
+    @JoinColumn(name="from_user_id", nullable=false)
+	private User fromUser;
+
+	@ManyToOne
+	@JoinColumn(name="to_user_id", nullable=false)
+	private User toUser;
 	
 }

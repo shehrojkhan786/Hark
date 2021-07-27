@@ -32,4 +32,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	
 	Boolean existsByEmailAndIsProfileCompleted(String email,boolean isProfileCompleted);
 
+	User findByVerificationCode(String code);
+
 }

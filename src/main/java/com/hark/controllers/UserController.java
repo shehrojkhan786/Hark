@@ -3,28 +3,32 @@
  */
 package com.hark.controllers;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
-
-import javax.validation.Valid;
-
-import com.hark.model.*;
+import com.hark.model.Badge;
+import com.hark.model.Discussion;
+import com.hark.model.User;
+import com.hark.model.UserRating;
 import com.hark.model.enums.ResponseStatus;
 import com.hark.model.payload.request.JSONRequest;
-import com.hark.repositories.*;
-import org.apache.commons.collections.CollectionUtils;
+import com.hark.model.payload.response.MessageResponse;
+import com.hark.repositories.BadgeRepository;
+import com.hark.repositories.DiscussionRepository;
+import com.hark.repositories.RatingRepository;
+import com.hark.repositories.UserRepository;
+import com.hark.securty.utils.JwtUtils;
+import com.hark.services.impl.SearchAndMatchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import com.hark.model.payload.response.MessageResponse;
-import com.hark.securty.utils.JwtUtils;
-import com.hark.services.impl.SearchAndMatchService;
+import javax.validation.Valid;
+import java.security.Principal;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * @author shkhan
@@ -49,9 +53,6 @@ public class UserController {
 
     @Autowired
     private DiscussionRepository discussionRepository;
-
-    @Autowired
-    JwtUtils jwtUtils;
 
     final int MAX_COUNTER = 5;
 
@@ -105,7 +106,7 @@ public class UserController {
         return searchAndMatchService.checkAndGetRoomForUser(userId);
     }
 
-    @GetMapping("/{username}")
+    @GetMapping("/getUserDetails")
     public ResponseEntity<?> getUserDetails(@Valid @RequestBody JSONRequest request) {
         MessageResponse response = new MessageResponse();
         User user = null;
@@ -138,36 +139,47 @@ public class UserController {
     }
 
     @PostMapping("/userRating")
-    public ResponseEntity<?> userRating(@RequestParam("stars") float stars, @RequestParam("toUser") String toUserEmail,
-                                        @RequestParam("discussionId") String discussionId) {
-        User user = null;
+    public ResponseEntity<?> userRating(@Valid @RequestBody JSONRequest request, Principal principal) {
+        User fromUser = null;
+        User toUser = null;
         Discussion discussion = null;
         MessageResponse response = new MessageResponse();
+        System.out.print("here are my stars: "+request.getStars());
         try {
-            user = userRepository.findByEmail(toUserEmail).get();
+            toUser = userRepository.findByEmail(request.getToUser()).get();
         } catch (NoSuchElementException ex) {
             response.setStatus(ResponseStatus.ERROR.name());
-            response.setMessage("Invalid username provided: " + toUserEmail);
+            response.setMessage("Invalid username provided: " + request.getToUser());
+            return ResponseEntity.ok(response);
+        }
+
+        try{
+            fromUser = userRepository.findByUsername(principal.getName()).get();
+        }catch (NoSuchElementException ex) {
+            response.setStatus(ResponseStatus.ERROR.name());
+            response.setMessage("Invalid logged in username provided: " + principal.getName());
             return ResponseEntity.ok(response);
         }
 
         try {
-            discussion = discussionRepository.findByDiscussionId(discussionId).get();
+            discussion = discussionRepository.findByDiscussionId(request.getDiscussionId()).get();
         } catch (NoSuchElementException ex) {
             // log here
             response.setStatus(ResponseStatus.ERROR.name());
-            response.setMessage("Invalid chat/discussion id provided: " + discussionId);
+            response.setMessage("Invalid chat/discussion id provided: " + request.getDiscussionId());
             return ResponseEntity.ok(response);
         }
 
         UserRating userRating = new UserRating();
-        userRating.setStars(stars);
+        userRating.setStars(request.getStars());
         userRating.setChatRoom(discussion);
-        userRating.setUser(user);
+        userRating.setToUser(toUser);
+        userRating.setFromUser(fromUser);
         ratingRepository.save(userRating);
 
         ExampleMatcher userRatingMatcher = ExampleMatcher.matching().withIgnorePaths("id")
-                .withMatcher("user_id", GenericPropertyMatchers.exact())
+                .withMatcher("to_user_id", GenericPropertyMatchers.exact())
+                .withMatcher("from_user_id", GenericPropertyMatchers.exact())
                 .withMatcher("discussion_id", GenericPropertyMatchers.exact());
         Example<UserRating> userRatingExample = Example.of(userRating, userRatingMatcher);
         boolean isSaved = ratingRepository.exists(userRatingExample);
@@ -182,52 +194,56 @@ public class UserController {
     }
 
     @GetMapping("/checkForProfileCompletion")
-    public ResponseEntity<?> isProfileCompleted(@Valid @RequestBody String email) {
+    public ResponseEntity<?> isProfileCompleted(@Valid @RequestBody JSONRequest request) {
         boolean isProfileCompleted = false;
+        MessageResponse response = new MessageResponse();
         try {
-            isProfileCompleted = userRepository.existsByEmailAndIsProfileCompleted(email, true);
+            isProfileCompleted = userRepository.existsByEmailAndIsProfileCompleted(request.getEmail(), true);
         } catch (Exception ex) {
-            // log here
-            return ResponseEntity.badRequest()
-                    .body(new MessageResponse("Error while checking for profile completion for email: " + email));
+            response.setStatus(ResponseStatus.ERROR.name());
+            response.setMessage("Error while checking for profile completion for email: " + request.getEmail());
         }
         if (isProfileCompleted) {
-            return ResponseEntity.ok(new MessageResponse("Profile is completed!!!"));
+            response.setStatus(ResponseStatus.SUCCESS.name());
+            response.setMessage("Profile is completed!!!");
         } else {
-            return ResponseEntity.badRequest()
-                    .body(new MessageResponse("Profile is not compeleted yet. Please complete profile."));
+            response.setStatus(ResponseStatus.FAILED.name());
+            response.setMessage("Profile is not completed yet. Please complete profile.");
         }
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/saveProfileDetails")
-    public ResponseEntity<?> saveProfileDetails(@Valid @RequestBody Long phone,
-                                                @Valid @RequestBody String politicalParty, @Valid @RequestBody String country,
-                                                @Valid @RequestBody String email, @Valid @RequestBody String deviceId) {
+    public ResponseEntity<?> saveProfileDetails(@Valid @RequestBody JSONRequest request) {
         User user = null;
+        MessageResponse response = new MessageResponse();
         try {
-            user = userRepository.findByEmail(email).get();
+            user = userRepository.findByEmail(request.getEmail()).get();
         } catch (NoSuchElementException ex) {
-            // log here
-            return ResponseEntity.badRequest()
-                    .body(new MessageResponse("Error while finding user for email: " + email));
+            response.setStatus(ResponseStatus.ERROR.name());
+            response.setMessage("Error while finding user for email: " + request.getEmail());
         } catch (Exception ex) {
-            // log here
-            return ResponseEntity.badRequest().body(new MessageResponse("Exception occured: " + ex.getMessage()));
+            response.setStatus(ResponseStatus.ERROR.name());
+            response.setMessage("Error for email: " + request.getEmail());
         }
 
         if (null != user) {
             try {
-                user.setCountry(country);
-                user.setPoliticalParty(politicalParty);
-                user.setPhone(phone);
-                user.setDeviceId(deviceId);
+                user.setCountry(request.getCountry());
+                user.setPoliticalParty(request.getPoliticalParty());
+                user.setPhone(request.getPhone());
                 user.setProfileCompleted(true);
                 userRepository.save(user);
+                response.setStatus(ResponseStatus.SUCCESS.name());
+                response.setMessage("Saved user data for email: " + request.getEmail());
             } catch (Exception ex) {
-                return ResponseEntity.badRequest().body(new MessageResponse("Exception occured: " + ex.getMessage()));
+                response.setStatus(ResponseStatus.ERROR.name());
+                response.setMessage("Error while saving user data for email: " + request.getEmail());
             }
+        }else {
+            response.setStatus(ResponseStatus.FAILED.name());
+            response.setMessage("No user found for email: " + request.getEmail());
         }
-        return ResponseEntity.badRequest().body(new MessageResponse("User not found!!!"));
+        return ResponseEntity.ok(response);
     }
-
 }

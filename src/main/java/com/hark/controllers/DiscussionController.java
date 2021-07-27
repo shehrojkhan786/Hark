@@ -6,6 +6,7 @@ package com.hark.controllers;
 import com.hark.model.*;
 import com.hark.model.enums.MessageType;
 import com.hark.model.enums.ResponseStatus;
+import com.hark.model.payload.request.JSONRequest;
 import com.hark.model.payload.response.MessageResponse;
 import com.hark.repositories.DiscussionFeedbackRepository;
 import com.hark.repositories.DiscussionRepository;
@@ -25,11 +26,9 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -158,7 +157,6 @@ public class DiscussionController {
     public void sendMessage(@Payload InstantMessage instantMessage, Principal principal,
                             SimpMessageHeaderAccessor headerAccessor) {
         String chatRoomId = headerAccessor.getSessionAttributes().get("chatRoomId").toString();
-        System.out.println("InstantMessage2 is " + instantMessage);
         instantMessage.setFromUser(principal.getName());
         instantMessage.setChatRoomId(chatRoomId);
         instantMessage.setMessageType(MessageType.valueOf(instantMessage.getChatMessageType()));
@@ -186,15 +184,37 @@ public class DiscussionController {
 
     @PostMapping("/discussionFeedback")
     @ResponseBody
-    public ResponseEntity<?> discussionFeedback(@RequestParam("feedback") String comment,
-                                                @RequestParam("toUser") String toUserName) {
+    public ResponseEntity<?> discussionFeedback(@Valid @RequestBody JSONRequest request,Principal principal) {
+        MessageResponse response =  new MessageResponse();
+        Discussion discussion = null;
+        User fromUser = null;
 
-        DiscussionUser discussionUser = new DiscussionUser();
-        discussionUser.setUsername(toUserName);
-        discussionUserRepository.save(discussionUser);
+        try{
+            fromUser = userRepository.findByUsername(principal.getName()).get();
+        }catch (NoSuchElementException ex) {
+            response.setStatus(ResponseStatus.ERROR.name());
+            response.setMessage("Invalid logged in username provided: " + principal.getName());
+            return ResponseEntity.ok(response);
+        }
 
-        DiscussionFeedback discussionFeedback = new DiscussionFeedback();
-        discussionFeedback.setComment(comment);
+        try {
+            discussion = discussionRepository.findByDiscussionId(request.getDiscussionId()).get();
+        } catch (NoSuchElementException ex) {
+            // log here
+            response.setStatus(ResponseStatus.ERROR.name());
+            response.setMessage("Invalid chat/discussion id provided: " + request.getDiscussionId());
+            return ResponseEntity.ok(response);
+        }
+        DiscussionUser discussionUser = null;
+        for(DiscussionUser discussionUserTemp : discussion.getDiscussionUsers()){
+                if(!discussionUserTemp.getUsername().equals(fromUser.getUsername())){
+                    discussionUser = discussionUserTemp;
+                    break;
+                }
+        }
+
+         DiscussionFeedback discussionFeedback = new DiscussionFeedback();
+        discussionFeedback.setComment(request.getFeedback());
         discussionFeedback.setDiscussionUser(discussionUser);
         discussionFeedbackRepository.save(discussionFeedback);
 
@@ -203,9 +223,12 @@ public class DiscussionController {
         Example<DiscussionFeedback> userRatingExample = Example.of(discussionFeedback, discussionFeedbackMatcher);
         boolean isSaved = discussionFeedbackRepository.exists(userRatingExample);
         if (isSaved) {
-            return ResponseEntity.ok(new MessageResponse("Discussion feedback saved!!!"));
+            response.setStatus(ResponseStatus.SUCCESS.name());
+            response.setMessage("Discussion feedback for user saved!!!");
+        }else {
+            response.setStatus(ResponseStatus.FAILED.name());
+            response.setMessage("Unable to save user discussion feedback please, try again!!!");
         }
-        return ResponseEntity.badRequest()
-                .body(new MessageResponse("Unable to save discussion feedback please, try again!!!"));
+        return ResponseEntity.ok(response);
     }
 }
