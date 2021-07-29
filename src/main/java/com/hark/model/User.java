@@ -39,8 +39,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "users",
 		uniqueConstraints = { 
 		@UniqueConstraint(columnNames = "username"),
-		@UniqueConstraint(columnNames = "email"),
-		@UniqueConstraint(columnNames = "phone")
+		@UniqueConstraint(columnNames = "email")
 	})
 @NoArgsConstructor
 @AllArgsConstructor
@@ -61,9 +60,6 @@ public class User implements Serializable {
 	@Size(min = 5)
 	@JsonIgnore
 	private String password;
-
-	@NotEmpty
-	private String name;
 
 	@Email
 	@NotEmpty
@@ -91,15 +87,10 @@ public class User implements Serializable {
 	private String verificationCode;
 	private boolean enabled;
 
-	public User(String username, String email, String password,Long phone,String politicalParty,String country,String name,String deviceId) {
+	public User(String username, String email, String password) {
 		this.username = username;
 		this.email = email;
 		this.password = password;
-		this.phone = phone;
-		this.politicalParty = politicalParty;
-		this.country = country;
-		this.name = name;
-		this.deviceId = deviceId;
 	}
 
 	@OneToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL,mappedBy="toUser")
