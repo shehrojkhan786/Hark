@@ -16,6 +16,9 @@ spring:
           auth : true
           starttls:
             enable : true
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
   datasource:
     url: jdbc:mysql://192.168.32.129:3306/hark
     username: root
@@ -54,10 +57,10 @@ spring:
     multipart:
       enabled: true
       max-file-size: 1MB
-      max-request-size: 1MB        
-        
-flyway.enabled: true      
-security.headers.cache: false 
+      max-request-size: 1MB
+
+flyway.enabled: true
+security.headers.cache: false
 server.session.timeout: 600
 
 # App Properties
@@ -65,7 +68,7 @@ hark:
  app:
   jwtSecret: harkSecretKey
   jwtExpirationMs: 86400000
- firebase-configuration-file: hark-FCM-admin-sdk.json   
+ firebase-configuration-file: hark-FCM-admin-sdk.json
  chat:
    relay:
      host: 192.168.32.129
@@ -118,4 +121,78 @@ hark:
   chat:
     relay:
       host: 192.168.32.129
+      port: 61613
+
+---
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  profiles: sourabh
+  mail:
+    host : smtp.mailtrap.io
+    port: 587
+    username : 7287e424d9846c
+    password : 23269a63383753
+    properties :
+      mail:
+        smtp:
+          auth : true
+          starttls:
+            enable : true
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+  datasource:
+    url: jdbc:mysql://localhost:3306/hark
+    username: root
+    password:
+    testWhileIdle: true
+    validationQuery: SELECT 1
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+      naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5Dialect
+        jdbc:
+          lob:
+            non_contextual_creation: true
+  session:
+    store-type: redis
+  messages:
+    cache-seconds: 0
+  redis:
+    host: localhost
+    port: 6379
+  data:
+    redis:
+      repositories:
+        enabled: true
+    cassandra:
+      local-datacenter: datacenter1
+      contact-points: localhost
+      port: 9042
+      keyspace-name: hark
+      entity-base-package : "com.hark.model"
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 1MB
+      max-request-size: 1MB
+
+flyway.enabled: true
+security.headers.cache: false
+server.session.timeout: 600
+
+# App Properties
+hark:
+  app:
+    jwtSecret: harkSecretKey
+    jwtExpirationMs: 86400000
+  firebase-configuration-file: hark-FCM-admin-sdk.json
+  chat:
+    relay:
+      host: localhost
       port: 61613
