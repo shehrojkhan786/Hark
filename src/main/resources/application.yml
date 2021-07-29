@@ -145,7 +145,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/hark
     username: root
-    password:
+    password: root
     testWhileIdle: true
     validationQuery: SELECT 1
   jpa:
