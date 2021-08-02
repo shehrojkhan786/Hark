@@ -17,7 +17,6 @@ import com.hark.securty.utils.JwtUtils;
 import com.hark.services.impl.UserDetailsImpl;
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;

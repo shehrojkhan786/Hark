@@ -25,8 +25,7 @@ public class SignupRequest {
     @Size(min = 6, max = 40)
     private String password;
 
-    @NotEmpty
-	private String name;
+    private String name;
 	
     @NotEmpty
 	private String deviceId;
