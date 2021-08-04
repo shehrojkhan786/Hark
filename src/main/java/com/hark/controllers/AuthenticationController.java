@@ -7,6 +7,7 @@ import com.hark.model.Role;
 import com.hark.model.User;
 import com.hark.model.enums.ERole;
 import com.hark.model.enums.ResponseStatus;
+import com.hark.model.payload.request.JSONRequest;
 import com.hark.model.payload.request.LoginRequest;
 import com.hark.model.payload.request.SignupRequest;
 import com.hark.model.payload.response.JwtResponse;
@@ -176,17 +177,19 @@ public class AuthenticationController {
     }
 
     @PostMapping("/verify")
-    public ResponseEntity<?> verify(@Valid @RequestBody String code) {
+    public ResponseEntity<?> verify(@Valid @RequestBody JSONRequest request) {
         MessageResponse response = new MessageResponse();
-        User user = userRepository.findByVerificationCode(code);
+        User user = userRepository.findByVerificationCode(request.getCode());
         if (user == null || user.isEnabled()) {
+            System.out.println("user is "+user+" code is "+request.getCode());
 			response.setMessage("Error: Email is already in use!");
 			response.setStatus(ResponseStatus.FAILED.name());
         } else {
             user.setVerificationCode(null);
             user.setEnabled(true);
+            user.setProfileCompleted(true);
             userRepository.save(user);
-			response.setMessage("Error: Email is already in use!");
+			response.setMessage("User verified successfully!!!");
 			response.setStatus(ResponseStatus.SUCCESS.name());
         }
 		return ResponseEntity.ok(response);

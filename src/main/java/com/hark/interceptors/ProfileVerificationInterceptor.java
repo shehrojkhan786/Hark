@@ -22,14 +22,17 @@ public class ProfileVerificationInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        User user = null;
+        String username = null;
         try {
-            User user = userRepository.findByUsername(request.getUserPrincipal().getName()).get();
-            if (!user.isEnabled()) {
-                System.out.println("Throwing exception user not verified.");
-                throw new UserNotVerifiedException("User " + request.getUserPrincipal().getName() + " is not verified.");
-            }
+            username = request.getUserPrincipal().getName();
+            user = userRepository.findByUsername(username).get();
         }catch (Exception exception){
-            // Do exception logging here...
+            System.out.println("User not found for user name: "+username+" with exception "+exception.getMessage());
+        }
+        if (null != user && !user.isEnabled()) {
+            System.out.println("Throwing exception user not verified.");
+            throw new UserNotVerifiedException("User " + request.getUserPrincipal().getName() + " is not verified.");
         }
         return super.preHandle(request,response,handler);
     }

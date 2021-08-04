@@ -35,6 +35,6 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(profileVerificationInterceptor).excludePathPatterns("/messages**")
                 .excludePathPatterns("/discussionRoom/**")
                 .excludePathPatterns("/api/discussionRoom/**")
-                .excludePathPatterns("/api/auth/");
+                .excludePathPatterns("/api/auth/**");
     }
 }

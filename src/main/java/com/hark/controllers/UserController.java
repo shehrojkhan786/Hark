@@ -213,7 +213,7 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/saveProfileDetails")
+    @PutMapping("/saveProfileDetails")
     public ResponseEntity<?> saveProfileDetails(@Valid @RequestBody JSONRequest request) {
         User user = null;
         MessageResponse response = new MessageResponse();

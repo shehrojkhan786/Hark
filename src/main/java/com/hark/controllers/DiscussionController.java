@@ -49,8 +49,8 @@ public class DiscussionController {
     @Autowired
     private DiscussionRepository discussionRepository;
 
-    @Autowired
-    private DiscussionUserRepository discussionUserRepository;
+//    @Autowired
+//    private DiscussionUserRepository discussionUserRepository;
 
     @Autowired
     private DiscussionFeedbackRepository discussionFeedbackRepository;
